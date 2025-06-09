@@ -42,7 +42,7 @@ export const blogService = {
     },
     getBlogById : async (blogId) =>{
         try{
-            const response = await axios.get(`${API_URL}/blog/getByAccountId/${blogId}`)
+            const response = await axios.get(`${API_URL}/blog/getById/${blogId}`)
             return response.data
         }catch(error){
             console.log(error)

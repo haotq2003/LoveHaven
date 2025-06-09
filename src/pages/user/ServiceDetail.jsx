@@ -1,10 +1,49 @@
 import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { jwtDecode } from "jwt-decode";
+import { bookingService } from '../../services/booking.service'; // Import bookingService
 
 const ServiceDetail = () => {
   const { id } = useParams();
   const [showBookingForm, setShowBookingForm] = useState(false);
   
+  const getUserInfo = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+  
+    try {
+      const decoded = jwtDecode(token);
+      return decoded.accountId || null;
+    } catch (error) {
+      console.error('Lỗi giải mã token:', error);
+      return null;
+    }
+  };
+
+  // Dữ liệu thành phố và quận/huyện Việt Nam
+  const vietnamCities = [
+    {
+      name: "Hà Nội",
+      districts: ["Ba Đình", "Hoàn Kiếm", "Tây Hồ", "Long Biên", "Cầu Giấy", "Đống Đa", "Hai Bà Trưng", "Hoàng Mai", "Thanh Xuân", "Sóc Sơn", "Đông Anh", "Gia Lâm", "Nam Từ Liêm", "Bắc Từ Liêm", "Mê Linh", "Hà Đông", "Sơn Tây", "Ba Vì", "Phúc Thọ", "Đan Phượng", "Hoài Đức", "Quốc Oai", "Thạch Thất", "Chương Mỹ", "Thanh Oai", "Thường Tín", "Phú Xuyên", "Ứng Hòa", "Mỹ Đức"]
+    },
+    {
+      name: "TP. Hồ Chí Minh",
+      districts: ["Quận 1", "Quận 2", "Quận 3", "Quận 4", "Quận 5", "Quận 6", "Quận 7", "Quận 8", "Quận 9", "Quận 10", "Quận 11", "Quận 12", "Thủ Đức", "Gò Vấp", "Bình Thạnh", "Tân Bình", "Tân Phú", "Phú Nhuận", "Bình Tân", "Hóc Môn", "Củ Chi", "Bình Chánh", "Nhà Bè", "Cần Giờ"]
+    },
+    {
+      name: "Đà Nẵng",
+      districts: ["Hải Châu", "Thanh Khê", "Sơn Trà", "Ngũ Hành Sơn", "Liên Chiểu", "Cẩm Lệ", "Hòa Vang", "Hoàng Sa"]
+    },
+    {
+      name: "Hải Phòng",
+      districts: ["Hồng Bàng", "Ngô Quyền", "Lê Chân", "Hải An", "Kiến An", "Đồ Sơn", "Dương Kinh", "Thuỷ Nguyên", "An Dương", "An Lão", "Kiến Thuỵ", "Tiên Lãng", "Vĩnh Bảo", "Cát Hải", "Bạch Long Vĩ"]
+    },
+    {
+      name: "Cần Thơ",
+      districts: ["Ninh Kiều", "Ô Môn", "Bình Thuỷ", "Cái Răng", "Thốt Nốt", "Vĩnh Thạnh", "Cờ Đỏ", "Phong Điền", "Thới Lai"]
+    }
+  ];
+
   // Dữ liệu mẫu cho dịch vụ tư vấn theo giờ
   const service = {
     id: 7,
@@ -81,21 +120,17 @@ const ServiceDetail = () => {
       }
     ]
   };
-
-  // State cho form đặt lịch
+  
+  // State cho form đặt lịch (chỉ giữ lại các trường cần thiết)
   const [bookingData, setBookingData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    city: '',
+    address: '',
     date: '',
-    time: '',
-    duration: 1, // Số giờ
-    location: '',
-    issue: '',
-    preferredExpert: ''
+    time: ''
   });
 
   const [errors, setErrors] = useState({});
+  const [selectedDistricts, setSelectedDistricts] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -103,72 +138,74 @@ const ServiceDetail = () => {
       ...bookingData,
       [name]: value
     });
+
+    // Khi chọn thành phố, cập nhật danh sách quận/huyện
+    if (name === 'city') {
+      const selectedCity = vietnamCities.find(city => city.name === value);
+      setSelectedDistricts(selectedCity ? selectedCity.districts : []);
+      // Reset address khi đổi thành phố
+      setBookingData(prev => ({
+        ...prev,
+        city: value,
+        address: ''
+      }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
     
-    if (!bookingData.name.trim()) newErrors.name = 'Vui lòng nhập họ tên';
-    if (!bookingData.email.trim()) newErrors.email = 'Vui lòng nhập email';
-    else if (!/\S+@\S+\.\S+/.test(bookingData.email)) newErrors.email = 'Email không hợp lệ';
-    if (!bookingData.phone.trim()) newErrors.phone = 'Vui lòng nhập số điện thoại';
-    else if (!/^[0-9]{10,11}$/.test(bookingData.phone)) newErrors.phone = 'Số điện thoại không hợp lệ';
+    if (!bookingData.city) newErrors.city = 'Vui lòng chọn thành phố';
+    if (!bookingData.address) newErrors.address = 'Vui lòng chọn quận/huyện';
     if (!bookingData.date) newErrors.date = 'Vui lòng chọn ngày';
     if (!bookingData.time) newErrors.time = 'Vui lòng chọn giờ';
-    if (!bookingData.location) newErrors.location = 'Vui lòng chọn địa điểm';
-    if (!bookingData.issue.trim()) newErrors.issue = 'Vui lòng mô tả vấn đề của bạn';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // Tính tổng tiền
-      const totalPrice = service.price * bookingData.duration;
-      
-      // Xử lý đặt lịch tư vấn
-      console.log('Booking data:', bookingData);
-      console.log('Total price:', totalPrice);
-      
-      // Hiển thị thông báo thành công
-      alert(`Đặt lịch tư vấn thành công! Tổng chi phí: ${totalPrice.toLocaleString()}đ`);
-      
-      // Reset form
-      setBookingData({
-        name: '',
-        email: '',
-        phone: '',
-        date: '',
-        time: '',
-        duration: 1,
-        location: '',
-        issue: '',
-        preferredExpert: ''
-      });
-      
-      // Ẩn form
-      setShowBookingForm(false);
+      // Chuẩn bị dữ liệu gửi đi theo đúng format bookingPayload
+      const bookingPayload = {
+        accountId: getUserInfo(), 
+        serviceId: parseInt(id), // Lấy serviceId từ URL params
+        address: bookingData.address,
+        city: bookingData.city,
+        preferredTime: new Date(bookingData.date + 'T' + bookingData.time).toISOString(), // Kết hợp date và time thành ISO string
+      };
+
+      try {
+        const response = await bookingService.createBooking(bookingPayload);
+        if (response) {
+          console.log('Booking created successfully:', response);
+          alert('Đặt lịch tư vấn thành công!');
+          // Reset form
+          setBookingData({
+            city: '',
+            address: '',
+            date: '',
+            time: ''
+          });
+          setSelectedDistricts([]);
+          setShowBookingForm(false);
+        } else {
+          alert('Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.');
+        }
+      } catch (error) {
+        console.error('Failed to create booking:', error);
+        alert('Đặt lịch thất bại. Vui lòng thử lại.');
+      }
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       
-      {/* <div className="bg-[#] rounded-3xl p-8 mb-12 text-center">
-        <div className="text-5xl mb-6 text-[#FF6B6B]">{service.icon}</div>
-        <h1 className="text-4xl font-bold text-[#FF6B6B] mb-4">{service.title}</h1>
-        <p className="text-xl text-gray-700 max-w-3xl mx-auto">{service.description}</p>
-        <div className="mt-8 inline-block bg-white px-6 py-3 rounded-xl shadow-sm">
-          <span className="text-2xl font-bold text-[#FF6B6B]">{service.price.toLocaleString()}đ</span>
-          <span className="text-gray-600"> / {service.duration} phút</span>
-        </div>
-      </div> */}
-      
       {/* Phần mô tả chi tiết */}
       <div className="mb-16">
-        <h2 className="text-3xl font-semibold text-[#] mb-6">Giới thiệu dịch vụ</h2>
+        <h2 className="text-3xl font-semibold text-[#FF6B6B] mb-6">Giới thiệu dịch vụ</h2>
         <p className="text-gray-700 leading-relaxed mb-8">{service.longDescription}</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -210,7 +247,7 @@ const ServiceDetail = () => {
       
       {/* Phần lợi ích */}
       <div className="mb-16">
-        <h2 className="text-3xl font-semibold text-[#] mb-8">Lợi ích khi sử dụng dịch vụ</h2>
+        <h2 className="text-3xl font-semibold text-[#FF6B6B] mb-8">Lợi ích khi sử dụng dịch vụ</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {service.benefits.map((benefit, index) => (
             <div key={index} className="bg-white rounded-xl shadow-sm p-6 border border-[#FFB6C1]/20 hover:shadow-md transition-all duration-300">
@@ -223,7 +260,7 @@ const ServiceDetail = () => {
       
       {/* Phần quy trình */}
       <div className="mb-16">
-        <h2 className="text-3xl font-semibold text-[#] mb-8">Quy trình tư vấn</h2>
+        <h2 className="text-3xl font-semibold text-[#FF6B6B] mb-8">Quy trình tư vấn</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {service.process.map((step) => (
             <div key={step.step} className="bg-white rounded-xl shadow-sm p-6 border border-[#FFB6C1]/20 relative">
@@ -251,8 +288,8 @@ const ServiceDetail = () => {
       </div>
       
       {/* Phần đăng ký tư vấn */}
-      <div className="bg-[#] rounded-3xl p-8 mb-12 text-center">
-        <h2 className="text-3xl font-semibold text-[#] mb-4">Đăng ký tư vấn ngay</h2>
+      <div className="bg-[#FFF5F5] rounded-3xl p-8 mb-12 text-center">
+        <h2 className="text-3xl font-semibold text-[#FF6B6B] mb-4">Đăng ký tư vấn ngay</h2>
         
         <button
           onClick={() => setShowBookingForm(!showBookingForm)}
@@ -269,53 +306,52 @@ const ServiceDetail = () => {
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Thông tin cá nhân */}
+              {/* Thành phố */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-[#FF6B6B] mb-1">
-                  Họ và tên
+                <label htmlFor="city" className="block text-sm font-medium text-[#FF6B6B] mb-1">
+                  Thành phố
                 </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={bookingData.name}
+                <select
+                  id="city"
+                  name="city"
+                  value={bookingData.city}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.name ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
-                />
-                {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+                  className={`w-full px-4 py-2 border ${errors.city ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
+                >
+                  <option value="">Chọn thành phố</option>
+                  {vietnamCities.map((city) => (
+                    <option key={city.name} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
               </div>
               
+              {/* Quận/Huyện */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-[#FF6B6B] mb-1">
-                  Email
+                <label htmlFor="address" className="block text-sm font-medium text-[#FF6B6B] mb-1">
+                  Quận/Huyện
                 </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={bookingData.email}
+                <select
+                  id="address"
+                  name="address"
+                  value={bookingData.address}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.email ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
-                />
-                {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                  disabled={!bookingData.city}
+                  className={`w-full px-4 py-2 border ${errors.address ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] ${!bookingData.city ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                >
+                  <option value="">Chọn quận/huyện</option>
+                  {selectedDistricts.map((district) => (
+                    <option key={district} value={district}>
+                      {district}
+                    </option>
+                  ))}
+                </select>
+                {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
               </div>
               
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-[#FF6B6B] mb-1">
-                  Số điện thoại
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={bookingData.phone}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.phone ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
-                />
-                {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
-              </div>
-              
-              {/* Thông tin lịch hẹn */}
+              {/* Ngày hẹn */}
               <div>
                 <label htmlFor="date" className="block text-sm font-medium text-[#FF6B6B] mb-1">
                   Ngày hẹn
@@ -332,6 +368,7 @@ const ServiceDetail = () => {
                 {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
               </div>
               
+              {/* Giờ hẹn */}
               <div>
                 <label htmlFor="time" className="block text-sm font-medium text-[#FF6B6B] mb-1">
                   Giờ hẹn
@@ -356,45 +393,6 @@ const ServiceDetail = () => {
                 </select>
                 {errors.time && <p className="mt-1 text-sm text-red-600">{errors.time}</p>}
               </div>
-              
-             
-              
-              <div>
-                <label htmlFor="location" className="block text-sm font-medium text-[#FF6B6B] mb-1">
-                  Hình thức tư vấn
-                </label>
-                <select
-                  id="location"
-                  name="location"
-                  value={bookingData.location}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.location ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
-                >
-                  <option value="">Chọn hình thức tư vấn</option>
-                  <option value="online">Trực tuyến (Zoom/Google Meet)</option>
-                  <option value="office">Tại văn phòng Love Haven</option>
-                  <option value="home">Tại nhà (phí di chuyển thêm 50.000đ)</option>
-                </select>
-                {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
-              </div>
-              
-              
-            </div>
-            
-            <div>
-              <label htmlFor="issue" className="block text-sm font-medium text-[#FF6B6B] mb-1">
-                Mô tả vấn đề của bạn
-              </label>
-              <textarea
-                id="issue"
-                name="issue"
-                rows="4"
-                value={bookingData.issue}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border ${errors.issue ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
-                placeholder="Mô tả ngắn gọn vấn đề bạn đang gặp phải để chúng tôi chuẩn bị tốt nhất cho buổi tư vấn..."
-              ></textarea>
-              {errors.issue && <p className="mt-1 text-sm text-red-600">{errors.issue}</p>}
             </div>
             
             <div className="flex justify-end space-x-4">

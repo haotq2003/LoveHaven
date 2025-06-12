@@ -23,6 +23,11 @@ import BlogDetail from './pages/user/BlogDetail'
 import ConsultantLayout from './components/consultant/ConsultantLayout'
 import ConsultantDashboard from './pages/consultant/DashBoard'
 import Profile from './pages/user/Profile'
+import AppointmentDetail from './pages/consultant/AppointmentDetail'
+import PaymentResult from './pages/user/PaymentResult'
+import ExpertDetail from './pages/user/ExpertDetail'
+import BookingHistory from './pages/user/BookingHistory'
+
 
 function App() {
   return (
@@ -36,10 +41,13 @@ function App() {
         <Route path="services" element={<ServicesPage />} />
         <Route path="services/:id" element={<ServiceDetail />} />
         <Route path="experts" element={<ExpertsPage />} />
+        <Route path="/experts/:accountId" element={<ExpertDetail />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="blog" element={<BlogPage />} />
         <Route path="blog/:id" element={<BlogDetail />} />
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/booking-history" element={<BookingHistory />} />
+        <Route path="/payment-result" element={<PaymentResult />} />
       </Route>
       <Route path="/manager" element={<ManagerLayout />}>
           <Route index element={<Dashboard />} />
@@ -50,6 +58,7 @@ function App() {
       </Route>
       <Route path="/consultant" element={<ConsultantLayout />}>
           <Route index element={<ConsultantDashboard />} />
+          <Route path="/consultant/appointments/:id" element={<AppointmentDetail />} />
           {/* Thêm các routes khác cho consultant ở đây */}
       </Route>
    </Routes>

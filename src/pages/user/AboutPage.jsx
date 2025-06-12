@@ -19,8 +19,8 @@ const AboutPage = () => {
       {/* Các mục dịch vụ */}
       <section className="mb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
-          <div className="bg-[#FFE2E2] p-4 rounded-lg overflow-hidden">
-            <img src="/images/about-1.jpg" alt="Chúng tôi mang đến gì" className="rounded-lg w-full h-auto" />
+          <div className="bg-[#] p-4 rounded-lg overflow-hidden">
+            <img  src="https://res.cloudinary.com/dturncvxv/image/upload/v1749478192/ChatGPT_Image_Jun_9_2025_09_09_29_PM_hol5c4.png" alt="Chúng tôi mang đến gì" className="rounded-lg w-full h-auto  object-cover" />
           </div>
           <div>
             <h2 className="text-3xl font-bold text-black mb-4">Chúng Tôi Mang Đến Gì Cho Bạn?</h2>
@@ -43,8 +43,8 @@ const AboutPage = () => {
               Tìm Hiểu Thêm
             </button>
           </div>
-          <div className="order-1 md:order-2 bg-[#FFE2E2] p-4 rounded-lg overflow-hidden">
-            <img src="/images/about-2.jpg" alt="Sứ mệnh của chúng tôi" className="rounded-lg w-full h-auto" />
+          <div className="order-1 md:order-2 bg-[#] p-4 rounded-lg overflow-hidden">
+            <img src="https://res.cloudinary.com/dturncvxv/image/upload/v1749478192/ChatGPT_Image_Jun_9_2025_09_09_29_PM_hol5c4.png" alt="Sứ mệnh của chúng tôi" className="rounded-lg w-full h-3/4  object-cover" />
           </div>
         </div>
       </section>
@@ -54,7 +54,7 @@ const AboutPage = () => {
         <h2 className="text-3xl font-semibold text-[#] mb-10 text-center">DỊCH VỤ CHUYÊN GIA HÀNG ĐẦU</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-            <img src="/images/service-1.jpg" alt="Dịch vụ" className="w-full h-48 object-cover rounded-lg mb-4" />
+            <img src="https://res.cloudinary.com/dturncvxv/image/upload/v1749478793/OIP_m2xtsg.webp" alt="Dịch vụ" className="w-full h-48 object-cover rounded-lg mb-4" />
             <h3 className="text-xl font-semibold text-[#FF6B6B] mb-2">DỊCH VỤ CÁ NHÂN HÓA VÀ BẢO MẬT</h3>
             <p className="text-gray-700">
               Tất cả các buổi tư vấn đều được bảo mật tuyệt đối, đảm bảo quyền riêng tư của bạn được tôn trọng.
@@ -62,7 +62,7 @@ const AboutPage = () => {
           </div>
           
           <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-            <img src="/images/service-2.jpg" alt="Dịch vụ" className="w-full h-48 object-cover rounded-lg mb-4" />
+            <img src="https://res.cloudinary.com/dturncvxv/image/upload/v1749479216/hotro_hknjfa.webp" alt="Dịch vụ" className="w-full h-48 object-cover rounded-lg mb-4" />
             <h3 className="text-xl font-semibold text-[#FF6B6B] mb-2">HỖ TRỢ TOÀN DIỆN</h3>
             <p className="text-gray-700">
               Chúng tôi cung cấp hỗ trợ toàn diện cho mọi vấn đề tâm lý, từ stress, lo âu đến các mối quan hệ.
@@ -70,7 +70,7 @@ const AboutPage = () => {
           </div>
           
           <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-            <img src="/images/service-3.jpg" alt="Dịch vụ" className="w-full h-48 object-cover rounded-lg mb-4" />
+            <img src="https://res.cloudinary.com/dturncvxv/image/upload/v1749479216/chiphi_g6qcp0.jpg" alt="Dịch vụ" className="w-full h-48 object-cover rounded-lg mb-4" />
             <h3 className="text-xl font-semibold text-[#FF6B6B] mb-2">CHI PHÍ HỢP LÝ & MINH BẠCH</h3>
             <p className="text-gray-700">
               Chúng tôi cam kết mang đến dịch vụ chất lượng với chi phí hợp lý và minh bạch.
@@ -96,16 +96,16 @@ const AboutPage = () => {
       </section>
 
       {/* Hình ảnh minh họa */}
-      <section className="mb-20">
+      {/* <section className="mb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-[#FFE2E2] p-4 rounded-lg">
-            <img src="/images/about-team.jpg" alt="Đội ngũ chuyên gia" className="rounded-lg w-full h-auto" />
+            <img src="https://res.cloudinary.com/dturncvxv/image/upload/v1749479216/doingu_d1wqgb.webp" alt="Đội ngũ chuyên gia" className="rounded-lg w-full h-auto" />
           </div>
           <div className="bg-[#FFE2E2] p-4 rounded-lg">
-            <img src="/images/about-office.jpg" alt="Văn phòng tư vấn" className="rounded-lg w-full h-auto" />
+            <img src="https://res.cloudinary.com/dturncvxv/image/upload/v1749479217/vanphong_yudy8c.webp" alt="Văn phòng tư vấn" className="rounded-lg w-full h-auto" />
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   )
 }

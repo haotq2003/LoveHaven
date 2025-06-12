@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { servicesService } from '../../services/services.service';
 import { consultantService } from '../../services/consultants.service';
+import { useNavigate } from 'react-router-dom';
 
 const ExpertsPage = () => {
   // Mảng chứa thông tin các chuyên gia
@@ -12,6 +13,7 @@ const ExpertsPage = () => {
  const hanldeRegisternow = () =>{
     window.location.href = '/doctor-register';
  }
+ const navigate = useNavigate();
     useEffect(()=>{
       getAllExperts();
     },[page,size])
@@ -65,7 +67,10 @@ const ExpertsPage = () => {
               </div>
             </div>
             <div className="bg-[#F0FFF4] p-6 flex justify-between gap-4">  {/* Thay đổi từ #FFE2E2 sang #F0FFF4 (xanh lá nhạt) */}
-              <button className="flex-1 bg-white text-[#2E8B57] border border-[#2E8B57] font-medium py-2.5 px-4 rounded-xl hover:bg-[#E6F7EE] transition-all duration-300">  {/* Thay đổi từ #FF6B6B sang #2E8B57 */}
+            <button
+                onClick={() => navigate(`/experts/${expert.account.id}`)} // thêm xử lý điều hướng
+                className="flex-1 bg-white text-[#2E8B57] border border-[#2E8B57] font-medium py-2.5 px-4 rounded-xl hover:bg-[#E6F7EE] transition-all duration-300"
+              >
                 Xem hồ sơ
               </button>
             

@@ -33,10 +33,11 @@ const Header = () => {
           <Link to="/" className="text-gray-800 hover:text-[#3CB371]">Trang chủ</Link>
           <Link to="/services" className="text-gray-600 hover:text-teal-600">Dịch vụ</Link>
           <Link to="/experts" className="text-gray-600 hover:text-teal-600">Chuyên gia</Link>
-          <Link to="/reviews" className="text-gray-600 hover:text-teal-600">Tư vấn</Link>
+          {/* <Link to="/reviews" className="text-gray-600 hover:text-teal-600">Tư vấn</Link> */}
           <Link to="/about" className="text-gray-600 hover:text-teal-600">Giới thiệu</Link>
           <Link to="/contact" className="text-gray-600 hover:text-teal-600">Liên hệ</Link>
           <Link to="/blog" className="text-gray-600 hover:text-teal-600">Blog</Link>
+          <Link to="/booking-history" className="text-gray-600 hover:text-teal-600">Lịch sử đặt lịch</Link>
         </nav>
 
         <div className="flex items-center space-x-4">

@@ -10,7 +10,7 @@ import FaqSection from '../../components/Home/FaqSection'
 import CallToActionSection from '../../components/Home/CallToActionSection'
 import { Link } from 'react-router-dom'
 import anh1 from '../../assets/anhtuvan.jpg'
-import video1 from '../../assets/video1.mp4'
+
 import ScrollFadeInSection from '../../common/ScrollFadeInSection'
 
 const HomePage = () => {
@@ -20,15 +20,16 @@ const HomePage = () => {
       <div className="relative bg-[#F48BA1] py-32 overflow-hidden">
   {/* Video nền */}
   <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    className="absolute inset-0 w-full h-full object-cover  z-0"
-  >
-    <source src={video1} type="video/mp4" />
-    Trình duyệt của bạn không hỗ trợ video.
-  </video>
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="absolute inset-0 w-full h-full object-cover z-0"
+>
+  <source src="https://res.cloudinary.com/dturncvxv/video/upload/v1749477516/video1_wia6mz.mp4" type="video/mp4" />
+  Trình duyệt của bạn không hỗ trợ video.
+</video>
+
 
   {/* Nội dung text trên nền video */}
   <div className="relative z-10 container mx-auto px-4 max-w-6xl text-center">

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
 import { bookingService } from '../../services/booking.service'; // Import bookingService
+import { message } from 'antd';
 
 const ServiceDetail = () => {
   const { id } = useParams();
@@ -167,20 +168,37 @@ const ServiceDetail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // Chuẩn bị dữ liệu gửi đi theo đúng format bookingPayload
       const bookingPayload = {
         accountId: getUserInfo(), 
-        serviceId: parseInt(id), // Lấy serviceId từ URL params
+        serviceId: parseInt(id),
         address: bookingData.address,
         city: bookingData.city,
-        preferredTime: new Date(bookingData.date + 'T' + bookingData.time).toISOString(), // Kết hợp date và time thành ISO string
+        preferredTime: new Date(bookingData.date + 'T' + bookingData.time).toISOString(),
       };
 
       try {
-        const response = await bookingService.createBooking(bookingPayload);
-        if (response) {
-          console.log('Booking created successfully:', response);
-          alert('Đặt lịch tư vấn thành công!');
+        // 1. Tạo booking
+        const bookingResponse = await bookingService.createBooking(bookingPayload);
+        if (bookingResponse?.data) {
+          console.log('Booking created successfully:', bookingResponse);
+          const bookingId = bookingResponse.data;
+
+          // 2. Gọi API đặt cọc VNPay
+          try {
+            const depositResponse = await fetch(`http://localhost:8080/vn-pay/deposit?appointmentId=${bookingId}&returnUrl=http://localhost:5173/payment-result`);
+            const depositData = await depositResponse.json();
+            
+            if (depositData?.data) {
+              // 3. Chuyển hướng đến trang thanh toán VNPay
+              window.location.href = depositData.data;
+            } else {
+              message.error('Không thể khởi tạo thanh toán. Vui lòng thử lại.');
+            }
+          } catch (depositError) {
+            console.error('Failed to initialize payment:', depositError);
+            message.error('Khởi tạo thanh toán thất bại. Vui lòng thử lại.');
+          }
+
           // Reset form
           setBookingData({
             city: '',
@@ -191,11 +209,11 @@ const ServiceDetail = () => {
           setSelectedDistricts([]);
           setShowBookingForm(false);
         } else {
-          alert('Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.');
+          message.error('Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.');
         }
       } catch (error) {
         console.error('Failed to create booking:', error);
-        alert('Đặt lịch thất bại. Vui lòng thử lại.');
+        message.error('Đặt lịch thất bại. Vui lòng thử lại.');
       }
     }
   };

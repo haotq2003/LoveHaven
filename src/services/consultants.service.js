@@ -16,5 +16,14 @@ export const consultantService = {
             throw error
         }
      },
+     updateProfileConsultant : async () =>{
+        try {
+            const res = await axios.get(`${API_URL}/get-all-consultants`)
+            return res.data
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+     },
      
 }

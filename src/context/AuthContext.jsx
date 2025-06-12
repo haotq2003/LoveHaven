@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const AuthContext = createContext();
@@ -7,7 +8,7 @@ export const AuthProvider = ({ children }) => {
 
     const [userEmail, setUserEmail] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -30,6 +31,7 @@ export const AuthProvider = ({ children }) => {
     
       const logout = () => {
         localStorage.removeItem('token');
+      
         setUserEmail(null);
         setIsLoggedIn(false);
       };

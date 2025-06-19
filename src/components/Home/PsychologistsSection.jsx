@@ -1,12 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Thinh from '../../assets/thinhlike.jpg'
-const experts = [
-  { id: 1, name: 'TS. Trương Gia Thịnh', specialty: 'Trị liệu cá nhân', image: Thinh},
-  { id: 2, name: 'ThS. Trương Gia Thịnh', specialty: 'Tư vấn gia đình', image: Thinh },
-  { id: 3, name: 'BS. Trương Gia Thịnh', specialty: 'Tâm lý trẻ em', image: Thinh },
-]
+import { consultantService } from '../../services/consultants.service';
+
 
 const PsychologistsSection = () => {
+  const [experts,setExperts] = useState([]);
+  useEffect(()=>{
+    fetchDoctor()
+  },[]);
+
+  const fetchDoctor = async () =>{
+   try {
+    const res = await consultantService.getAllConsultant();
+    console.log(res.data.content)
+    setExperts(res.data.content);
+   } catch (error) {
+    console.log(error)
+   }
+  }
   return (
     <section className="py-16 ">
       <div className="container mx-auto px-4">
@@ -19,8 +30,8 @@ const PsychologistsSection = () => {
             >
               <div className="relative mb-6">
                 <img 
-                  src={expert.image} 
-                  alt={expert.name} 
+                  src={expert.account.urlImage} 
+                 
                   className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-[#ff5252]/20 group-hover:border-[#ff5252]/40 transition-all duration-300" 
                 />
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-[#f06666] text-white px-4 py-1 rounded-full text-sm">
@@ -28,9 +39,9 @@ const PsychologistsSection = () => {
                 </div>
               </div>
               <h3 className="text-xl text-center font-semibold mb-2  group-hover:text-[#1D6F42] transition-colors duration-300">
-                {expert.name}
+                {expert.account.name}
               </h3>
-              <p className="text-gray-600 font-medium text-center ">{expert.specialty}</p>
+              <p className="text-gray-600 font-medium text-center ">{expert.expertise}</p>
               <button className="mt-6 w-32 mx-auto block  bg-[#FF6B6B] hover:bg-[#ff5252] text-white font-medium py-2 px-4 rounded-full transition-colors duration-300">
                 Xem hồ sơ
               </button>

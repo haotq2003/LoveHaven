@@ -18,7 +18,7 @@ const Profile = () => {
         }
 
         const tokenData = JSON.parse(atob(token.split('.')[1]));
-        const accountId = tokenData.accountId;
+        const accountId = tokenData.id;
 
         const response = await userService.viewInforUser(accountId);
         setUserInfo(response.data);

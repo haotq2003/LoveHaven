@@ -84,7 +84,7 @@ const Dashboard = () => {
   const handleAccept = () => {
     if (selectedBooking) {
       const user = getUserInfo()
-      const consultantId = user?.counsultantId
+      const consultantId = user?.consultantId
       handleAcceptBooking(selectedBooking.id, consultantId)
     }
   }

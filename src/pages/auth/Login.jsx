@@ -48,6 +48,7 @@ const Login = () => {
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Đăng nhập không thành công');
+      console.log(err)
     } finally {
       setLoading(false);
     }

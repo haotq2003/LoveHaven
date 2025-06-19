@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../../components/Home/Header'
 import Footer from '../../components/Home/Footer'
 import HeroSection from '../../components/Home/HeroSection'
@@ -12,8 +12,11 @@ import { Link } from 'react-router-dom'
 import anh1 from '../../assets/anhtuvan.jpg'
 
 import ScrollFadeInSection from '../../common/ScrollFadeInSection'
+import { consultantService } from '../../services/consultants.service'
 
 const HomePage = () => {
+
+  
   return (
     <div className='bg-white min-h-screen'>
       {/* Hero Section - Banner chính */}

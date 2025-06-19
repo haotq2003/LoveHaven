@@ -27,6 +27,8 @@ import AppointmentDetail from './pages/consultant/AppointmentDetail'
 import PaymentResult from './pages/user/PaymentResult'
 import ExpertDetail from './pages/user/ExpertDetail'
 import BookingHistory from './pages/user/BookingHistory'
+import AppointmentScheduler from './pages/consultant/AppointmentScheduler'
+import EditProfile from './pages/user/EditProfile.'
 
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
         <Route path="/profile" element={<Profile/>} />
         <Route path="/booking-history" element={<BookingHistory />} />
         <Route path="/payment-result" element={<PaymentResult />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
+
       </Route>
       <Route path="/manager" element={<ManagerLayout />}>
           <Route index element={<Dashboard />} />
@@ -59,6 +63,7 @@ function App() {
       <Route path="/consultant" element={<ConsultantLayout />}>
           <Route index element={<ConsultantDashboard />} />
           <Route path="/consultant/appointments/:id" element={<AppointmentDetail />} />
+          <Route path="appointments" element={<AppointmentScheduler />} />
           {/* Thêm các routes khác cho consultant ở đây */}
       </Route>
    </Routes>

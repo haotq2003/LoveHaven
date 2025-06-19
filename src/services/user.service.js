@@ -1,6 +1,5 @@
 import axios from 'axios'
-
-const API_URL = 'http://localhost:8080'
+import { API_URL } from '../config/api'
 
 export const userService = {
   getUserById: async (userId) => {
@@ -29,6 +28,15 @@ export const userService = {
       console.log(error)
       throw error
     }
+  },
+  updateProfile : async (userId,user) =>{
+try {
+  const res = await axios.put(`${API_URL}/update/${userId}`,user)
+  return res.data
+} catch (error) {
+  console.log(error)
+  throw error
+}
   },
   
 }

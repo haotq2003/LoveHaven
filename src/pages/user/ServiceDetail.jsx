@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
 import { bookingService } from '../../services/booking.service'; // Import bookingService
@@ -14,7 +14,7 @@ const ServiceDetail = () => {
   
     try {
       const decoded = jwtDecode(token);
-      return decoded.accountId || null;
+      return decoded.id || null;
     } catch (error) {
       console.error('Lỗi giải mã token:', error);
       return null;
@@ -166,6 +166,13 @@ const ServiceDetail = () => {
   };
 
   const handleSubmit = async (e) => {
+    const accountId = getUserInfo();
+  if (!accountId) {
+    console.log('Vui lòng đăng nhập để đặt lịch tư vấn.')
+    message.error('Vui lòng đăng nhập để đặt lịch tư vấn.');
+    return; // Dừng xử lý nếu không có accountId
+  }
+    console.log('Dữ liệu form trước khi gửi:', bookingData);
     e.preventDefault();
     if (validateForm()) {
       const bookingPayload = {
@@ -179,6 +186,7 @@ const ServiceDetail = () => {
       try {
         // 1. Tạo booking
         const bookingResponse = await bookingService.createBooking(bookingPayload);
+      
         if (bookingResponse?.data) {
           console.log('Booking created successfully:', bookingResponse);
           const bookingId = bookingResponse.data;

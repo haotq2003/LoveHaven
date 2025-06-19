@@ -14,17 +14,17 @@ const PaymentResult = () => {
 
       if (vnp_ResponseCode && vnp_TxnRef) {
         try {
-          const status = vnp_ResponseCode === '00' ? 'Success' : 'Failed';
+          const status = vnp_ResponseCode === '00' ? 'DEPOSITED' : 'Failed';
           const response = await axios.put(
             `http://localhost:8080/payment/update-status-by-transaction-code?transactionCode=${vnp_TxnRef}&status=${status}`
           );
 
           if (response.status === 200) {
-            if (status === 'Success') {
+           
               message.success('Thanh toán thành công!');
-            } else {
-              message.error('Thanh toán thất bại!');
-            }
+           
+              
+            
           } else {
             message.error('Không thể cập nhật trạng thái thanh toán!');
           }

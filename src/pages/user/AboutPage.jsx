@@ -1,4 +1,5 @@
 import React from 'react'
+import ScrollFadeInSection from '../../common/ScrollFadeInSection'
 
 const AboutPage = () => {
   return (
@@ -7,6 +8,7 @@ const AboutPage = () => {
     
 
       {/* Giới thiệu chung */}
+      <ScrollFadeInSection>
       <section className="mb-20">
         <div className=" ">
           <h2 className="text-3xl font-semibold text-black mb-8 text-center">VỀ CHÚNG TÔI</h2>
@@ -15,9 +17,10 @@ const AboutPage = () => {
           </p>
         </div>
       </section>
-
-      {/* Các mục dịch vụ */}
-      <section className="mb-20">
+      </ScrollFadeInSection>
+    
+<ScrollFadeInSection>
+<section className="mb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
           <div className="bg-[#] p-4 rounded-lg overflow-hidden">
             <img  src="https://res.cloudinary.com/dturncvxv/image/upload/v1749478192/ChatGPT_Image_Jun_9_2025_09_09_29_PM_hol5c4.png" alt="Chúng tôi mang đến gì" className="rounded-lg w-full h-auto  object-cover" />
@@ -48,9 +51,10 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Các dịch vụ */}
-      <section className="mb-20">
+</ScrollFadeInSection>
+      {/* Các mục dịch vụ */}
+     <ScrollFadeInSection>
+     <section className="mb-20">
         <h2 className="text-3xl font-semibold text-[#] mb-10 text-center">DỊCH VỤ CHUYÊN GIA HÀNG ĐẦU</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
@@ -78,9 +82,14 @@ const AboutPage = () => {
           </div>
         </div>
       </section>
+     </ScrollFadeInSection>
+
+      {/* Các dịch vụ */}
+     
 
       {/* Call to Action */}
-      <section className="text-center py-12 px-8 bg-[#FFE2E2] rounded-3xl shadow-lg border border-[#FFB6C1]/20 mb-20">
+     <ScrollFadeInSection>
+     <section className="text-center py-12 px-8 bg-[#FFE2E2] rounded-3xl shadow-lg border border-[#FFB6C1]/20 mb-20">
         <h2 className="text-3xl font-semibold text-black mb-6">Chúng Tôi Có Thể Giúp Gì?</h2>
         <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
           Hãy để chúng tôi đồng hành cùng bạn vượt qua mọi khó khăn. Đội ngũ chuyên gia tâm lý của chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn trên hành trình chữa lành và phát triển.
@@ -94,6 +103,7 @@ const AboutPage = () => {
           </button>
         </div>
       </section>
+     </ScrollFadeInSection>
 
       {/* Hình ảnh minh họa */}
       {/* <section className="mb-20">

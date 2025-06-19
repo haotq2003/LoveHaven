@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { API_URL } from '../config/api'
 
-const API_URL = 'http://localhost:8080'
+
 
 export const consultantService = {
      getAllConsultant :  async (page = 0, size = 10) =>{

@@ -83,5 +83,17 @@ export const bookingService = {
           throw error
         }
       },
+      getBookingByConsultant : async (consultantId) =>{
+        try {
+            const response = await axios.get(`${API_URL}/appointment/get-by-consultant-id`, {
+            params: { consultantId }
+          
+          })
+          return response
+        } catch (error) {
+            console.log(error)
+            throw error
+        }
+      }
       
 }

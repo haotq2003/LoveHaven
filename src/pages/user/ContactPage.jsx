@@ -1,7 +1,11 @@
 import React from 'react'
 import ScrollFadeInSection from '../../common/ScrollFadeInSection'
+import { message } from 'antd'
 
 const ContactPage = () => {
+  const handleSubmit = () =>{
+    message.success("Gửi tin nhắn thành công")
+  }
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <section className="text-center mb-16">

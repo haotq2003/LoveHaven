@@ -29,10 +29,17 @@ import ExpertDetail from './pages/user/ExpertDetail'
 import BookingHistory from './pages/user/BookingHistory'
 import AppointmentScheduler from './pages/consultant/AppointmentScheduler'
 import EditProfile from './pages/user/EditProfile.'
+import ConsultantAccounts from './pages/manager/ConsultantAccounts'
+import Wallet from './pages/user/Wallet'
+import VNPayReturn from './pages/user/VNPayReturn'
+import Chat from './pages/consultant/Chat'
+import { ChatProvider } from './context/ChatContext'
+
 
 
 function App() {
   return (
+      <ChatProvider>
    <Routes>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
@@ -51,6 +58,8 @@ function App() {
         <Route path="/booking-history" element={<BookingHistory />} />
         <Route path="/payment-result" element={<PaymentResult />} />
         <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/wallet" element={<Wallet />} />
+        <Route path="/vnpay-return" element={<VNPayReturn />} />
 
       </Route>
       <Route path="/manager" element={<ManagerLayout />}>
@@ -58,15 +67,18 @@ function App() {
           <Route path="services" element={<Services />} />
           <Route path="users" element={<Customers />} />
           <Route path="blog" element={<Blog />} />
+          <Route path="consultant-accounts" element={<ConsultantAccounts />} />
           {/* Thêm các routes khác cho manager ở đây */}
       </Route>
       <Route path="/consultant" element={<ConsultantLayout />}>
           <Route index element={<ConsultantDashboard />} />
           <Route path="/consultant/appointments/:id" element={<AppointmentDetail />} />
           <Route path="appointments" element={<AppointmentScheduler />} />
+          <Route path="chat" element={<Chat />} />
           {/* Thêm các routes khác cho consultant ở đây */}
       </Route>
    </Routes>
+   </ChatProvider>
   )
 }
 

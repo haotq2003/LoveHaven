@@ -3,8 +3,14 @@ import { useParams, Link } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
 import { bookingService } from '../../services/booking.service'; // Import bookingService
 import { message } from 'antd';
-
+import { paymentService } from '../../services/payment.service';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import { walletService } from '../../services/wallet.service';
 const ServiceDetail = () => {
+  dayjs.extend(utc);
+dayjs.extend(timezone);
   const { id } = useParams();
   const [showBookingForm, setShowBookingForm] = useState(false);
   
@@ -174,15 +180,18 @@ const ServiceDetail = () => {
   }
     console.log('Dữ liệu form trước khi gửi:', bookingData);
     e.preventDefault();
+
+  
+  
     if (validateForm()) {
       const bookingPayload = {
         accountId: getUserInfo(), 
         serviceId: parseInt(id),
         address: bookingData.address,
         city: bookingData.city,
-        preferredTime: new Date(bookingData.date + 'T' + bookingData.time).toISOString(),
+        preferredTime: dayjs(`${bookingData.date}T${bookingData.time}`).format('YYYY-MM-DDTHH:mm:ss'),
       };
-
+   
       try {
         // 1. Tạo booking
         const bookingResponse = await bookingService.createBooking(bookingPayload);
@@ -193,18 +202,15 @@ const ServiceDetail = () => {
 
           // 2. Gọi API đặt cọc VNPay
           try {
-            const depositResponse = await fetch(`http://localhost:8080/vn-pay/deposit?appointmentId=${bookingId}&returnUrl=http://localhost:5173/payment-result`);
-            const depositData = await depositResponse.json();
+            const depositData = await walletService.depositBooking(bookingId)
+            message.success('Thanh toán thành công');
             
-            if (depositData?.data) {
-              // 3. Chuyển hướng đến trang thanh toán VNPay
-              window.location.href = depositData.data;
-            } else {
-              message.error('Không thể khởi tạo thanh toán. Vui lòng thử lại.');
-            }
+          
+              
+           
           } catch (depositError) {
             console.error('Failed to initialize payment:', depositError);
-            message.error('Khởi tạo thanh toán thất bại. Vui lòng thử lại.');
+            message.error(' Thanh toán thất bại. Vui lòng thử lại.');
           }
 
           // Reset form
@@ -407,15 +413,15 @@ const ServiceDetail = () => {
                   className={`w-full px-4 py-2 border ${errors.time ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
                 >
                   <option value="">Chọn giờ hẹn</option>
+                  <option value="08:00">08:00</option>
                   <option value="09:00">09:00</option>
                   <option value="10:00">10:00</option>
                   <option value="11:00">11:00</option>
-                  <option value="14:00">14:00</option>
+                  <option value="13:00">14:00</option>
                   <option value="15:00">15:00</option>
                   <option value="16:00">16:00</option>
                   <option value="17:00">17:00</option>
-                  <option value="18:00">18:00</option>
-                  <option value="19:00">19:00</option>
+                  
                 </select>
                 {errors.time && <p className="mt-1 text-sm text-red-600">{errors.time}</p>}
               </div>

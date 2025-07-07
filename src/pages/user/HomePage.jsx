@@ -13,6 +13,8 @@ import anh1 from '../../assets/anhtuvan.jpg'
 
 import ScrollFadeInSection from '../../common/ScrollFadeInSection'
 import { consultantService } from '../../services/consultants.service'
+import ChatBox from './ChatBox'
+import ChatToggleBox from './ChatBox'
 
 const HomePage = () => {
 
@@ -122,7 +124,7 @@ const HomePage = () => {
         <ScrollFadeInSection>
         <FaqSection />
         </ScrollFadeInSection>
-     
+     <ChatToggleBox/>
  
      
     </div>

@@ -21,13 +21,15 @@ export const bookingService = {
             throw error
         }
     },
-    getBookigByCusId : async (customerId) =>{
-        try{
-            const response = await axios.get(`${API_URL}/appointment/get-by-customer-id/${customerId}`)
-            return response.data
-        }catch(error){
-            console.log(error)
-            throw error
+    getBookingByCusId: async (customerId) => {
+        try {
+            const response = await axios.get(`${API_URL}/appointment/get-by-customer-id`, {
+                params: { customerId } 
+            });
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            throw error;
         }
     },
     getBookingByCity : async (city) =>{
@@ -57,21 +59,22 @@ export const bookingService = {
             throw error
         }
     },
-    bookingUpdateTime : async (id ,startTime ,endTime ) =>{
-        try{
-            const response = await axios.put(`${API_URL}/assignment/update-time`,{
-                params:{
-                    id,
-                    startTime,
-                    endTime
-                }
-            })
-            return response.data
-        }catch(error){
-            console.log(error)
-            throw error
-        }
-    },
+   bookingUpdateTime: async (id, startTime, endTime) => {
+  try {
+    const response = await axios.put(`${API_URL}/assignment/update-time`, null, {
+      params: {
+        id,
+        startTime,
+        endTime
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+},
+
     getBookingById: async (id) => {
         try {
           const response = await axios.get(`${API_URL}/assignment/get-by-appointment`, {
@@ -94,6 +97,30 @@ export const bookingService = {
             console.log(error)
             throw error
         }
+      },
+    updateStatusBooking: async (id, status) => {
+  try {
+    const res = await axios.put(`${API_URL}/appointment/update-status`, null, {
+      params: {
+        id,
+        status
       }
+    });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+},
+getAllBookingTransaction : async () =>{
+    try {
+        const res = await axios.get(`${API_URL}/payment/get-all`)
+        return res.data;
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
       
 }

@@ -17,7 +17,7 @@ const Blog = () => {
   
     try {
       const decoded = jwtDecode(token);
-      return decoded.accountId || null;
+      return decoded.id || null;
     } catch (error) {
       console.error('Lỗi giải mã token:', error);
       return null;

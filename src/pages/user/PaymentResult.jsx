@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { message } from 'antd';
 import axios from 'axios';
+import { paymentService } from '../../services/payment.service';
 
 const PaymentResult = () => {
   const [searchParams] = useSearchParams();
@@ -14,10 +15,8 @@ const PaymentResult = () => {
 
       if (vnp_ResponseCode && vnp_TxnRef) {
         try {
-          const status = vnp_ResponseCode === '00' ? 'DEPOSITED' : 'Failed';
-          const response = await axios.put(
-            `http://localhost:8080/payment/update-status-by-transaction-code?transactionCode=${vnp_TxnRef}&status=${status}`
-          );
+          const status = vnp_ResponseCode === '00' ? 'Success ' : 'Failed';
+          const response = await paymentService.updatePaymentStatus(vnp_TxnRef, status);
 
           if (response.status === 200) {
            

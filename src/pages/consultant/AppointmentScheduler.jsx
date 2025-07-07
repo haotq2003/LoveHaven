@@ -4,6 +4,9 @@ import { jwtDecode } from 'jwt-decode';
 import { bookingService } from '../../services/booking.service';
 import axios from 'axios';
 import { message } from 'antd';
+import { Modal, TimePicker } from 'antd';
+import dayjs from 'dayjs';
+import { walletService } from '../../services/wallet.service';
 
 const AppointmentScheduler = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -17,6 +20,9 @@ const AppointmentScheduler = () => {
   const [examEndTime, setExamEndTime] = useState('');
   const [isExamStarted, setIsExamStarted] = useState(false);
   const [examStartedAt, setExamStartedAt] = useState(null);
+  const [manualStartTime, setManualStartTime] = useState(null);
+const [manualEndTime, setManualEndTime] = useState(null);
+
 
   const statusColors = {
     confirmed: 'bg-green-100 text-green-800',
@@ -73,52 +79,22 @@ const AppointmentScheduler = () => {
     return matchesSearch && matchesStatus && matchesDate;
   });
 
-  const formatTime = (date) => {
-    const d = new Date(date);
-    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-    return local.toISOString().split('.')[0];
-  };
+ const formatTime = (date) => {
+  const d = new Date(date);
+  return d.toLocaleString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour12: false // Định dạng 24h, đổi thành true nếu muốn 12h (AM/PM)
+  });
+};
   
 
-  const handleStartExam = () => {
-    const now = new Date();
-    setExamStartedAt(now);
-    setIsExamStarted(true);
-    setExamStartTime(now);
-  };
 
-  const handleEndExam = async () => {
-    const now = new Date();
-    setExamEndTime(now);
-    setIsExamStarted(false);
-    
-    try {
-      // Cập nhật thời gian khám
-      const startTime = formatTime(examStartedAt);
-      const endTime = formatTime(now);
-      
-      await axios.put(
-        `http://localhost:8080/assignment/update-time?id=${currentAppointment.appointmentAssignment.id}&startTime=${startTime}&endTime=${endTime}`
-      );
-      
-      message.success('Đã cập nhật thời gian khám thành công!');
-      
-      // Gọi API thanh toán
-      const paymentResponse = await axios.get(
-        `http://localhost:8080/vn-pay/pay?appointmentId=${currentAppointment.id}&returnUrl=${window.location.href}`
-      );
-      
-      if (paymentResponse.data && paymentResponse.data.data) {
-        // Chuyển hướng đến trang thanh toán VNPay
-        window.location.href = paymentResponse.data.data;
-      } else {
-        message.error('Không thể tạo link thanh toán!');
-      }
-    } catch (error) {
-      console.error('Lỗi khi cập nhật thời gian khám:', error);
-      message.error('Có lỗi xảy ra khi cập nhật thời gian khám!');
-    }
-  };
+
+
 
   const handleOpenExamModal = (appointment) => {
     
@@ -203,40 +179,47 @@ const AppointmentScheduler = () => {
     </div>
   );
 
-  // Kiểm tra xem URL có chứa thông tin thanh toán từ VNPay không
-  useEffect(() => {
-    const handleVNPayReturn = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const vnp_ResponseCode = urlParams.get('vnp_ResponseCode');
-      const vnp_TxnRef = urlParams.get('vnp_TxnRef');
+ 
+const handleConfirmExam = async () => {
+  if (!manualStartTime || !manualEndTime) {
+    message.warning('Vui lòng chọn đầy đủ thời gian bắt đầu và kết thúc');
+    return;
+  }
 
-      if (vnp_ResponseCode && vnp_TxnRef) {
-        try {
-          const status = vnp_ResponseCode === '00' ? 'Done' : 'Failed';
-          await axios.put(
-            `http://localhost:8080/payment/update-status-by-transaction-code?transactionCode=${vnp_TxnRef}&status=${status}`
-          );
+  try {
+    const date = currentAppointment?.preferredTime?.split('T')[0];
+    const startTimeStr = `${date}T${manualStartTime.format('HH:mm')}:00`;
+    const endTimeStr = `${date}T${manualEndTime.format('HH:mm')}:00`;
 
-          if (status === 'Done') {
-            message.success('Thanh toán thành công!');
-          } else {
-            message.error('Thanh toán thất bại!');
-          }
+    await bookingService.bookingUpdateTime(
+  currentAppointment.appointmentAssignment.id,
+  startTimeStr,
+  endTimeStr
+);
 
-          // Xóa tham số URL để tránh xử lý lại khi tải lại trang
-          window.history.replaceState({}, document.title, window.location.pathname);
-          
-          // Tải lại danh sách lịch hẹn
-          fetchBooking();
-        } catch (error) {
-          console.error('Lỗi khi cập nhật trạng thái thanh toán:', error);
-          message.error('Có lỗi xảy ra khi cập nhật trạng thái thanh toán!');
-        }
-      }
-    };
 
-    handleVNPayReturn();
-  }, []);
+    message.success('Đã cập nhật thời gian khám thành công!');
+
+    // ✅ Trừ tiền từ ví
+    try {
+    await walletService.payBooking(currentAppointment.id);
+       await bookingService.updateStatusBooking(currentAppointment.id, 'COMPLETED');
+        message.success('Thanh toán thành công!');
+        fetchBooking(); // reload lại danh sách
+      
+    } catch (error) {
+      console.error(error);
+      message.error('Đã xảy ra lỗi khi thanh toán ');
+    }
+  } catch (error) {
+    console.error(error);
+    message.error('Có lỗi xảy ra khi cập nhật thời gian khám!');
+  } finally {
+    handleCloseExamModal();
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from to">
@@ -315,57 +298,38 @@ const AppointmentScheduler = () => {
               {filteredAppointments.length} lịch hẹn
             </span>
           </div>
-          {showExamModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white rounded-lg p-6 w-full max-w-lg relative">
-      <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-red-600"
-        onClick={handleCloseExamModal}
-      >
-        <X className="w-5 h-5" />
-      </button>
-      <h2 className="text-xl font-semibold mb-4">Thông tin khám</h2>
+<Modal
+  title="Thông tin khám"
+  open={showExamModal}
+  onCancel={handleCloseExamModal}
+  onOk={handleConfirmExam}
+  okText="Xác nhận & Thanh toán"
+  cancelText="Hủy"
+>
+  <p><strong>Bệnh nhân:</strong> {currentAppointment?.customer?.name}</p>
+  <p><strong>Thời gian dự kiến:</strong> {formatTime(currentAppointment?.preferredTime)}</p>
 
-      <p className="text-gray-700 mb-2">
-        <strong>Bệnh nhân:</strong> {currentAppointment?.customer?.name}
-      </p>
-      <p className="text-gray-700 mb-2">
-        <strong>Thời gian dự kiến:</strong> {currentAppointment?.preferredTime}
-      </p>
-
-      {examStartTime && (
-        <p className="text-gray-700 mb-2">
-          <strong>Thời gian bắt đầu:</strong>{' '}
-          {new Date(examStartTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-        </p>
-      )}
-
-      {examEndTime && (
-        <p className="text-gray-700 mb-4">
-          <strong>Thời gian kết thúc:</strong>{' '}
-          {new Date(examEndTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-        </p>
-      )}
-
-      {!isExamStarted ? (
-        <button
-          onClick={handleStartExam}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-        >
-          Bắt đầu khám
-          
-        </button>
-      ) : (
-        <button
-          onClick={handleEndExam}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-        >
-          Kết thúc khám & Thanh toán
-        </button>
-      )}
-    </div>
+  <div className="mt-4">
+    <label className="block text-gray-700 mb-1">Thời gian bắt đầu</label>
+    <TimePicker
+      className="w-full"
+      format="HH:mm"
+      value={manualStartTime}
+      onChange={(value) => setManualStartTime(value)}
+    />
   </div>
-)}
+
+  <div className="mt-4">
+    <label className="block text-gray-700 mb-1">Thời gian kết thúc</label>
+    <TimePicker
+      className="w-full"
+      format="HH:mm"
+      value={manualEndTime}
+      onChange={(value) => setManualEndTime(value)}
+    />
+  </div>
+</Modal>
+
 
 
           {filteredAppointments.length === 0 ? (

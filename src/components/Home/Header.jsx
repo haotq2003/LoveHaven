@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from '../../assets/logo.jpg';
-import { LogOut, User, ChevronDown } from 'lucide-react';
+import { LogOut, User, ChevronDown,Wallet  } from 'lucide-react';
 import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
@@ -58,10 +58,15 @@ const Header = () => {
               </div>
 
               {dropdownOpen && (
+                
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-200">
                   <Link to="/profile" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setDropdownOpen(false)}>
                     <User size={16} className="mr-2" />
                     Trang cá nhân
+                  </Link>
+                  <Link to="/wallet" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <Wallet size={16} className="mr-2" />
+                    Ví
                   </Link>
                   <button onClick={handleLogout} className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     <LogOut size={16} className="mr-2" />

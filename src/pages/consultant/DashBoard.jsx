@@ -5,6 +5,7 @@ import { bookingService } from '../../services/booking.service'
 import { useNavigate } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode"
 import { message } from 'antd'
+import { formatCurrency } from '../../components/common/formatCurrency'
 
 const Dashboard = () => {
   const { userEmail } = useAuth()
@@ -320,8 +321,8 @@ const Dashboard = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-600 mb-1">Giá theo giờ:</label>
                       <div className="flex items-center">
-                        <DollarSign size={16} className="text-green-500 mr-1" />
-                        <p className="text-gray-800 font-medium">{selectedBooking.service?.pricePerHour || 0} VNĐ</p>
+                       
+                        <p className="text-gray-800 font-medium">{formatCurrency(selectedBooking.service?.pricePerHour || 0)} </p>
                       </div>
                     </div>
                     <div className="md:col-span-2">
@@ -384,13 +385,13 @@ const Dashboard = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-600 mb-1">Trạng thái:</label>
                       <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                        selectedBooking.status === 'PENDING' 
+                        selectedBooking.status === 'DEPOSITED' 
                           ? 'bg-yellow-100 text-yellow-800' 
                           : selectedBooking.status === 'ACCEPTED'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
-                        {selectedBooking.status === 'PENDING' ? 'Chờ xác nhận' : selectedBooking.status}
+                        {selectedBooking.status === 'DEPOSITED' ? 'Đã đặt cọc' : selectedBooking.status}
                       </span>
                     </div>
                     <div className="md:col-span-2">
@@ -406,7 +407,7 @@ const Dashboard = () => {
             </div>
 
             {/* Modal Footer */}
-            {selectedBooking.status === 'PENDING' && (
+            {selectedBooking.status === 'DEPOSITED' && (
               <div className="px-6 py-4 border-t bg-gray-50 flex justify-end space-x-3">
                 <button
                   onClick={() => setShowModal(false)}

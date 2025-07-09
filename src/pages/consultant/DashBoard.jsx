@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isloading, setisLoading] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {

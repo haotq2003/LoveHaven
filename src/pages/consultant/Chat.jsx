@@ -6,8 +6,7 @@ import { getEmailFromToken } from '../../config/jwtHelper';
 
 const Chat = () => {
   const { conversationId, token, setConversationId } = useChatContext();
-  const { messages, sendMessage } = useChatSocket(conversationId, token);
-
+  const { messages, sendMessage, isConnected } = useChatSocket(conversationId, token);
   const myEmail = getEmailFromToken(token);
 
   const [newMessage, setNewMessage] = useState('');
@@ -15,7 +14,6 @@ const Chat = () => {
   const [historyMessages, setHistoryMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
-  // Lấy danh sách cuộc trò chuyện
   useEffect(() => {
     const fetchConversations = async () => {
       try {
@@ -29,11 +27,9 @@ const Chat = () => {
         console.error('❌ Lỗi khi lấy conversations:', error);
       }
     };
-
     fetchConversations();
   }, []);
 
-  // Lấy lịch sử tin nhắn khi chọn conversation
   useEffect(() => {
     const fetchMessages = async () => {
       if (!conversationId) return;
@@ -48,25 +44,31 @@ const Chat = () => {
         console.error('❌ Lỗi khi lấy tin nhắn:', err);
       }
     };
-
     fetchMessages();
   }, [conversationId]);
 
-  // Tự động scroll xuống cuối
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, historyMessages]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !conversationId) return;
-    sendMessage({ conversationId, message: newMessage });
+    if (!newMessage.trim() || !conversationId || !isConnected) {
+      console.warn('⛔ Không thể gửi tin nhắn: kết nối chưa sẵn sàng hoặc nội dung rỗng');
+      return;
+    }
+
+    sendMessage({
+      conversationId,
+      content: newMessage.trim(),
+    });
+
     setNewMessage('');
   };
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar: Danh sách cuộc trò chuyện */}
+      {/* Sidebar */}
       <div className="w-1/4 bg-white border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <div className="relative">
@@ -86,20 +88,16 @@ const Chat = () => {
             </h3>
             <div className="space-y-2">
               {conversations.map((conv) => {
-                const otherParticipant = conv.participants?.find(
-  (p) => p.email && p.email !== myEmail
-);
-const name = otherParticipant?.name || 'Không rõ tên';
+                const other = conv.participants?.find((p) => p.email !== myEmail);
+                const name = other?.name || 'Không rõ tên';
 
                 return (
                   <div
                     key={conv.id}
-                    className={`p-2 rounded hover:bg-gray-100 cursor-pointer border border-gray-200 ${
+                    className={`p-2 rounded hover:bg-gray-100 cursor-pointer border ${
                       conversationId === conv.id ? 'bg-gray-100' : ''
                     }`}
-                    onClick={() => {
-                      setConversationId?.(conv.id);
-                    }}
+                    onClick={() => setConversationId(conv.id)}
                   >
                     <div className="flex items-center space-x-2">
                       <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -108,7 +106,7 @@ const name = otherParticipant?.name || 'Không rõ tên';
                       <div className="flex-1">
                         <div className="font-medium">{name}</div>
                         <div className="text-xs text-gray-500 truncate">
-                          {conv.lastMessage?.content || 'Chưa có tin nhắn'}
+                          {conv.lastMessage?.content || conv.lastMessage?.message || 'Chưa có tin nhắn'}
                         </div>
                       </div>
                     </div>
@@ -126,14 +124,11 @@ const name = otherParticipant?.name || 'Không rõ tên';
           <div className="p-4 text-gray-500">Chọn một cuộc trò chuyện để bắt đầu</div>
         ) : (
           <>
-            {/* Danh sách tin nhắn */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-white">
               {[...historyMessages, ...messages].map((msg, index) => {
                 const senderEmail = msg.sender?.email || msg.senderEmail;
-                const senderName = msg.sender?.name || msg.sender?.fullName || 'Ẩn danh';
                 const isMine = senderEmail === myEmail;
-
-                const messageText = msg.message || msg.content || msg.text || '';
+                const messageText = msg.content || msg.message || msg.text || '';
                 const timestamp = msg.createdDate
                   ? new Date(msg.createdDate).toLocaleTimeString([], {
                       hour: '2-digit',
@@ -143,12 +138,11 @@ const name = otherParticipant?.name || 'Không rõ tên';
 
                 return (
                   <div key={index} className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}>
-                    {!isMine && <span className="text-xs text-gray-500 mb-1">{senderName}</span>}
                     <div
                       className={`p-2 rounded-lg max-w-xs ${
                         isMine
-                          ? 'bg-blue-500 text-white self-end ml-auto text-right'
-                          : 'bg-gray-200 text-black self-start text-left'
+                          ? 'bg-blue-500 text-white self-end ml-auto'
+                          : 'bg-gray-200 text-black self-start'
                       }`}
                     >
                       {messageText}
@@ -160,7 +154,10 @@ const name = otherParticipant?.name || 'Không rõ tên';
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Ô nhập tin nhắn */}
+            {!isConnected && (
+              <div className="text-xs text-red-500 text-center p-1">⚠️ Đang kết nối tới máy chủ...</div>
+            )}
+
             <form onSubmit={handleSendMessage} className="flex border-t p-2 bg-white">
               <input
                 type="text"
@@ -171,7 +168,12 @@ const name = otherParticipant?.name || 'Không rõ tên';
               />
               <button
                 type="submit"
-                className="ml-2 px-4 py-1 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+                disabled={!isConnected || !newMessage.trim()}
+                className={`ml-2 px-4 py-1 rounded-full text-white ${
+                  isConnected && newMessage.trim()
+                    ? 'bg-blue-500 hover:bg-blue-600'
+                    : 'bg-gray-400 cursor-not-allowed'
+                }`}
               >
                 Gửi
               </button>

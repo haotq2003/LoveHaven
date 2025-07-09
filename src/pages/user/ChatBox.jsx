@@ -17,7 +17,6 @@ const ChatToggleBox = () => {
 
   const { conversationId, setConversationId, token } = useChatContext();
   const { messages, sendMessage } = useChatSocket(conversationId, token);
-
   const myEmail = getEmailFromToken(token);
 
   const toggleChat = () => {
@@ -54,10 +53,7 @@ const ChatToggleBox = () => {
   const handleSelectAccount = async (account) => {
     try {
       const email = account.email;
-      if (!email) {
-        console.warn('Không tìm thấy email hợp lệ:', account);
-        return;
-      }
+      if (!email) return;
 
       const request = {
         type: 'private',
@@ -78,7 +74,6 @@ const ChatToggleBox = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       if (!conversationId) return;
-
       try {
         const res = await chatService.getMessages(conversationId);
         setHistoryMessages(res.reverse());
@@ -86,7 +81,6 @@ const ChatToggleBox = () => {
         console.error('❌ Lỗi khi tải lịch sử tin nhắn:', err);
       }
     };
-
     fetchMessages();
   }, [conversationId]);
 
@@ -94,7 +88,7 @@ const ChatToggleBox = () => {
     if (!input.trim() || !conversationId) return;
     sendMessage({
       conversationId,
-      message: input.trim(),
+      content: input.trim(), // ✅ content field cho chuẩn
     });
     setInput('');
   };
@@ -127,19 +121,18 @@ const ChatToggleBox = () => {
             <div className="p-4 space-y-2 h-64 overflow-y-auto">
               <p className="text-sm text-gray-700 mb-2">Chọn người bạn muốn trò chuyện:</p>
               {Array.isArray(accounts) && accounts.length > 0 ? (
-  accounts.map((acc) => (
-    <button
-      key={acc.email}
-      onClick={() => handleSelectAccount(acc)}
-      className="block w-full text-left px-3 py-2 border rounded hover:bg-gray-100"
-    >
-      {acc.name || 'Không tên'}
-    </button>
-  ))
-) : (
-  <p className="text-sm text-gray-500 italic">Không tìm thấy tài khoản phù hợp.</p>
-)}
-
+                accounts.map((acc) => (
+                  <button
+                    key={acc.email}
+                    onClick={() => handleSelectAccount(acc)}
+                    className="block w-full text-left px-3 py-2 border rounded hover:bg-gray-100"
+                  >
+                    {acc.name || 'Không tên'}
+                  </button>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 italic">Không tìm thấy tài khoản phù hợp.</p>
+              )}
             </div>
           ) : (
             <>
@@ -147,7 +140,7 @@ const ChatToggleBox = () => {
                 {[...historyMessages, ...messages].map((msg, idx) => {
                   const senderEmail = msg.sender?.email || msg.senderEmail;
                   const isMine = senderEmail === myEmail;
-                  const messageText = msg.message || msg.content || msg.text || '';
+                  const messageText = msg.content || msg.message || msg.text || '...';
 
                   return (
                     <div

@@ -1,13 +1,13 @@
-// src/utils/jwtHelper.js
+// src/config/jwtHelper.js
+import { jwtDecode } from 'jwt-decode';
+
 export const getEmailFromToken = (token) => {
-  if (!token || typeof token !== 'string') return null;
+  if (!token) return null;
   try {
-    const payloadBase64 = token.split('.')[1];
-    const payloadJson = atob(payloadBase64);
-    const payload = JSON.parse(payloadJson);
-    return payload.email;
+    const decoded = jwtDecode(token);
+    return decoded.email || decoded.sub || null;
   } catch (e) {
-    console.error('Không thể giải mã token:', e);
+    console.error('❌ Không thể giải mã token:', e);
     return null;
   }
 };

@@ -131,8 +131,7 @@ const handleCancel = () => {
         onChange={handleTableChange}
       />
 
-      <Modal
-
+  <Modal
   visible={visible}
   onCancel={handleCancel}
   footer={[
@@ -150,36 +149,65 @@ const handleCancel = () => {
       Duyệt
     </Button>,
   ]}
+  title="Chi tiết tư vấn viên"
 >
- {selectedConsultant && (
-  <div className="space-y-3 text-gray-800 text-sm">
-    <div className="border-b pb-2 mb-4">
-      <h3 className="text-lg font-semibold">Thông tin cá nhân</h3>
-    </div>
-
-    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-      <p><span className="font-semibold">Họ tên:</span> {selectedConsultant.account.name}</p>
-      <p><span className="font-semibold">Email:</span> {selectedConsultant.account.email}</p>
-      <p><span className="font-semibold">Số điện thoại:</span> {selectedConsultant.account.phone}</p>
-      <p><span className="font-semibold">Địa chỉ:</span> {selectedConsultant.account.address}</p>
-      <p><span className="font-semibold">Trạng thái:</span> {selectedConsultant.account.status}</p>
-      <p><span className="font-semibold">Kinh nghiệm:</span> {selectedConsultant.bio}</p>
-      <p><span className="font-semibold">Học vấn:</span> {selectedConsultant.expertise}</p>
-    </div>
-
-    {selectedConsultant.account.urlImage && (
-      <div className="mt-4">
-        <img
-          src={selectedConsultant.account.urlImage}
-          alt="Ảnh tư vấn viên"
-          className="w-full max-h-64 object-contain border rounded-md shadow-sm"
-        />
+  {selectedConsultant && (
+    <div className="space-y-6 text-gray-800 text-sm">
+      {/* Thông tin cá nhân */}
+      <div>
+        <h3 className="text-lg font-semibold border-b pb-2 mb-2">Thông tin cá nhân</h3>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          <p><span className="font-semibold">Họ tên:</span> {selectedConsultant.account.name}</p>
+          <p><span className="font-semibold">Email:</span> {selectedConsultant.account.email}</p>
+          <p><span className="font-semibold">Số điện thoại:</span> {selectedConsultant.account.phone}</p>
+          <p><span className="font-semibold">Địa chỉ:</span> {selectedConsultant.account.address}</p>
+          <p><span className="font-semibold">Trạng thái:</span> {selectedConsultant.account.status}</p>
+        </div>
       </div>
-    )}
-  </div>
-)}
 
+      {/* Tiểu sử & chuyên môn */}
+      <div>
+        <h3 className="text-lg font-semibold border-b pb-2 mb-2">Chuyên môn</h3>
+        <p><span className="font-semibold">Tiểu sử:</span> {selectedConsultant.bio}</p>
+        <p><span className="font-semibold">Chuyên môn:</span> {selectedConsultant.expertise}</p>
+      </div>
+
+      {/* Ảnh đại diện */}
+      {selectedConsultant.account.urlImage && (
+        <div>
+          <h3 className="text-lg font-semibold border-b pb-2 mb-2">Ảnh đại diện</h3>
+          <img
+            src={selectedConsultant.account.urlImage}
+            alt="Ảnh tư vấn viên"
+            className="w-full max-h-64 object-contain border rounded-md shadow-sm"
+          />
+        </div>
+      )}
+
+      {/* Chứng chỉ */}
+      {selectedConsultant.urlCertificates?.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold border-b pb-2 mb-2">Chứng chỉ</h3>
+          <ul className="list-disc pl-5 space-y-1">
+            {selectedConsultant.urlCertificates.map((url, index) => (
+              <li key={index}>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline break-all"
+                >
+                  {url}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )}
 </Modal>
+
 
     </div>
     

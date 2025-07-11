@@ -2,11 +2,17 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { bookingService } from '../../services/booking.service';
-
+  import { Modal, Input, message } from 'antd';
+import { FeedBackService } from '../../services/feedback.service';
 const BookingHistory = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+const [feedbackContent, setFeedbackContent] = useState('');
+const [selectedBooking, setSelectedBooking] = useState(null);
   const [relatedServices, setRelatedServices] = useState([
     {
       id: 1,
@@ -78,6 +84,32 @@ const BookingHistory = () => {
         Lỗi: {error}
       </div>
     );
+const handleReview = (booking) => {
+  setSelectedBooking(booking);
+  setFeedbackContent('');
+  setFeedbackModalVisible(true);
+};
+const handleSubmitFeedback = async () => {
+  if (!feedbackContent.trim()) {
+    message.warning('Vui lòng nhập nội dung đánh giá');
+    return;
+  }
+
+  try {
+    await FeedBackService.createFeedBack({
+      content: feedbackContent,
+      customerId: selectedBooking.customer.id,
+      consultantId: selectedBooking.appointmentAssignment
+.consultant.id
+    });
+
+    message.success('Đánh giá đã được gửi!');
+    setFeedbackModalVisible(false);
+  } catch (error) {
+    console.error(error);
+    message.error('Gửi đánh giá thất bại');
+  }
+};
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -91,6 +123,7 @@ const BookingHistory = () => {
               <th className="text-left py-4">Phương thức</th>
               <th className="text-left py-4">Giá</th>
               <th className="text-left py-4">Trạng Thái</th>
+                  <th className="text-left py-4">Đánh giá</th>
             </tr>
           </thead>
           <tbody>
@@ -127,12 +160,41 @@ const BookingHistory = () => {
                   <span className={`px-3 py-1 rounded-full text-sm ${booking.status === 'Ended' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                     {booking.status}
                   </span>
+
+               
+                </td>
+                <td>
+                     {booking.status === 'COMPLETED' && (
+                    <div className="mt-2">
+                      <button
+                        onClick={() => handleReview(booking)}
+                        className="text-pink-600 hover:text-pink-700 text-sm font-medium"
+                      >
+                        Đánh giá
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+<Modal
+  title="Đánh giá tư vấn viên"
+  visible={feedbackModalVisible}
+  onCancel={() => setFeedbackModalVisible(false)}
+  onOk={handleSubmitFeedback}
+  okText="Gửi"
+  cancelText="Hủy"
+>
+  <Input.TextArea
+    rows={4}
+    value={feedbackContent}
+    onChange={(e) => setFeedbackContent(e.target.value)}
+    placeholder="Nhập nội dung đánh giá..."
+  />
+</Modal>
 
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">

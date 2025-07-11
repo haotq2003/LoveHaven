@@ -14,7 +14,8 @@ const DoctorRegister = () => {
     address: '',
     urlImage: '',
     bio: '',
-    expertise: ''
+    expertise: '',
+      certificates: []
   })
 
   const [errors, setErrors] = useState({})
@@ -127,7 +128,8 @@ const DoctorRegister = () => {
           urlImage: formData.urlImage
         },
         bio: formData.bio,
-        expertise: formData.expertise
+        expertise: formData.expertise,
+        certificates: formData.certificates
       }
       
       // Đăng ký tài khoản bác sĩ
@@ -326,6 +328,57 @@ const DoctorRegister = () => {
                 )}
               </div>
             </div>
+            <div>
+  <label className="block text-sm font-medium text-[#FF6B6B]">
+    Chứng chỉ (Link)
+  </label>
+  {formData.certificates.map((cert, index) => (
+    <div key={index} className="flex items-center gap-2 mt-2">
+      <input
+        type="url"
+        name={`certificate-${index}`}
+        value={cert}
+        placeholder="https://example.com/certificate.pdf"
+        onChange={(e) => {
+          const newCertificates = [...formData.certificates]
+          newCertificates[index] = e.target.value
+          setFormData({ ...formData, certificates: newCertificates })
+        }}
+        className="flex-1 px-3 py-2 border border-[#FFB6C1] rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#FF6B6B] focus:border-[#FF6B6B] sm:text-sm"
+      />
+      {formData.certificates.length > 1 && (
+        <button
+          type="button"
+          onClick={() => {
+            const newCertificates = formData.certificates.filter((_, i) => i !== index)
+            setFormData({ ...formData, certificates: newCertificates })
+          }}
+          className="text-red-500 hover:text-red-700 text-sm"
+        >
+          Xoá
+        </button>
+      )}
+    </div>
+  ))}
+
+  <button
+    type="button"
+    onClick={() =>
+      setFormData({
+        ...formData,
+        certificates: [...formData.certificates, '']
+      })
+    }
+    className="mt-2 text-[#FF6B6B] hover:text-[#FF5252] text-sm"
+  >
+    + Thêm chứng chỉ
+  </button>
+
+  {errors.certificates && (
+    <p className="mt-1 text-sm text-red-600">{errors.certificates}</p>
+  )}
+</div>
+
 
             <div>
               <button

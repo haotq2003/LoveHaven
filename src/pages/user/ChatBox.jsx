@@ -1,3 +1,4 @@
+// ChatToggleBox.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, X } from 'lucide-react';
 import axios from 'axios';
@@ -17,7 +18,7 @@ const ChatToggleBox = () => {
 
   const { conversationId, setConversationId, token } = useChatContext();
   const { messages, sendMessage } = useChatSocket(conversationId, token);
-  const myEmail = getEmailFromToken(token);
+  const myEmail = getEmailFromToken(token)?.toLowerCase();
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -36,11 +37,9 @@ const ChatToggleBox = () => {
         paramsSerializer: (params) =>
           params.roles.map((r) => `roles=${encodeURIComponent(r)}`).join('&'),
       });
-      const list = response.data?.data || [];
-      setAccounts(list);
+      setAccounts(response.data?.data || []);
     } catch (err) {
-      console.error('❌ Lỗi khi lấy danh sách tài khoản:', err);
-      setAccounts([]);
+      console.error('❌ Lỗi lấy danh sách tài khoản:', err);
     }
   };
 
@@ -53,17 +52,12 @@ const ChatToggleBox = () => {
   const handleSelectAccount = async (account) => {
     try {
       const email = account.email;
-      if (!email) return;
-
-      const request = {
+      const res = await chatService.createConversation({
         type: 'private',
         participantId: [email],
-      };
-
-      const res = await chatService.createConversation(request);
+      });
       const id = res?.data?.id || res?.data?.data?.id;
       if (!id) throw new Error('Không nhận được ID cuộc trò chuyện');
-
       setConversationId(id);
       setSelectedAccount(account);
     } catch (err) {
@@ -78,7 +72,7 @@ const ChatToggleBox = () => {
         const res = await chatService.getMessages(conversationId);
         setHistoryMessages(res.reverse());
       } catch (err) {
-        console.error('❌ Lỗi khi tải lịch sử tin nhắn:', err);
+        console.error('❌ Lỗi tải lịch sử:', err);
       }
     };
     fetchMessages();
@@ -86,10 +80,7 @@ const ChatToggleBox = () => {
 
   const handleSendMessage = () => {
     if (!input.trim() || !conversationId) return;
-    sendMessage({
-      conversationId,
-      content: input.trim(), // ✅ content field cho chuẩn
-    });
+    sendMessage({ conversationId, content: input.trim() });
     setInput('');
   };
 
@@ -109,37 +100,35 @@ const ChatToggleBox = () => {
       )}
 
       {isOpen && (
-        <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg border border-gray-300 rounded-xl z-50 flex flex-col overflow-hidden">
+        <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg border rounded-xl z-50 flex flex-col overflow-hidden">
           <div className="bg-pink-500 text-white px-4 py-2 flex justify-between items-center">
             <span className="font-bold">Hỗ trợ tư vấn</span>
-            <button onClick={toggleChat} className="hover:text-gray-200">
-              <X size={20} />
-            </button>
+            <button onClick={toggleChat}><X size={20} /></button>
           </div>
 
           {!selectedAccount ? (
             <div className="p-4 space-y-2 h-64 overflow-y-auto">
-              <p className="text-sm text-gray-700 mb-2">Chọn người bạn muốn trò chuyện:</p>
-              {Array.isArray(accounts) && accounts.length > 0 ? (
-                accounts.map((acc) => (
-                  <button
-                    key={acc.email}
-                    onClick={() => handleSelectAccount(acc)}
-                    className="block w-full text-left px-3 py-2 border rounded hover:bg-gray-100"
-                  >
-                    {acc.name || 'Không tên'}
-                  </button>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500 italic">Không tìm thấy tài khoản phù hợp.</p>
-              )}
+              <p className="text-sm">Chọn người bạn muốn trò chuyện:</p>
+              {accounts.length > 0 ? accounts.map((acc) => (
+                <button
+                  key={acc.email}
+                  onClick={() => handleSelectAccount(acc)}
+                  className="block w-full text-left px-3 py-2 border rounded hover:bg-gray-100"
+                >
+                  {acc.name || acc.email}
+                </button>
+              )) : <p className="text-sm italic">Không tìm thấy tài khoản phù hợp.</p>}
             </div>
           ) : (
             <>
               <div className="h-64 overflow-y-auto p-4 space-y-2 flex flex-col">
                 {[...historyMessages, ...messages].map((msg, idx) => {
-                  const senderEmail = msg.sender?.email || msg.senderEmail;
+                  const rawEmail = msg?.sender?.email || msg?.senderEmail || '';
+                  const senderEmail = typeof rawEmail === 'string' ? rawEmail.toLowerCase() : '';
                   const isMine = senderEmail === myEmail;
+
+                  //console.log(`[Message ${idx}]`, { senderEmail, myEmail, isMine });
+
                   const messageText = msg.content || msg.message || msg.text || '...';
 
                   return (
@@ -160,16 +149,13 @@ const ChatToggleBox = () => {
 
               <div className="flex items-center border-t p-2">
                 <input
-                  className="flex-1 border border-gray-300 rounded-full px-3 py-1 text-sm outline-none"
+                  className="flex-1 border rounded-full px-3 py-1 text-sm"
                   placeholder="Nhập tin nhắn..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
-                <button
-                  onClick={handleSendMessage}
-                  className="ml-2 p-2 bg-pink-500 text-white rounded-full hover:bg-pink-600"
-                >
+                <button onClick={handleSendMessage} className="ml-2 p-2 bg-pink-500 text-white rounded-full">
                   <Send size={16} />
                 </button>
               </div>

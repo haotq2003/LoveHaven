@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-import { getEmailFromToken } from '../config/jwtHelper';
+import { jwtDecode } from 'jwt-decode';
+
+const isTokenExpired = (token) => {
+  try {
+    const { exp } = jwtDecode(token);
+    return exp * 1000 < Date.now();
+  } catch (e) {
+    console.error('❌ Token invalid:', e);
+    return true;
+  }
+};
 
 export const useChatSocket = (conversationId, token) => {
   const [messages, setMessages] = useState([]);
@@ -13,36 +23,44 @@ export const useChatSocket = (conversationId, token) => {
     if (!conversationId || !token) return;
 
     const jwtToken = typeof token === 'string' ? token : token?.token;
-    if (!jwtToken || !jwtToken.includes('.')) return;
+    if (!jwtToken || !jwtToken.includes('.') || isTokenExpired(jwtToken)) {
+      console.warn('⚠️ Token không hợp lệ hoặc đã hết hạn');
+      return;
+    }
 
     const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
     const stompClient = Stomp.over(socket);
+    stompClient.debug = () => {};
     stompClientRef.current = stompClient;
 
-    stompClient.connect({}, () => {
-      setIsConnected(true);
+    stompClient.connect(
+      {},
+      () => {
+        setIsConnected(true);
+        console.log('✅ STOMP connected');
 
-      // Hủy đăng ký cũ nếu có
-      if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
+        if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
+
+        subscriptionRef.current = stompClient.subscribe(
+          `/user/queue/conversation/${conversationId}`,
+          (msg) => {
+            const data = JSON.parse(msg.body);
+            setMessages((prev) => [...prev, data]);
+          }
+        );
+      },
+      (error) => {
+        setIsConnected(false);
+        console.error('❌ STOMP connect error:', error);
       }
-
-      // Đăng ký nhận tin nhắn cho conversation hiện tại
-      subscriptionRef.current = stompClient.subscribe(
-        `/user/queue/conversation/${conversationId}`,
-        (msg) => {
-          const data = JSON.parse(msg.body);
-          setMessages((prev) => [...prev, data]);
-        }
-      );
-    }, () => setIsConnected(false));
+    );
 
     return () => {
-      if (subscriptionRef.current) {
-        subscriptionRef.current.unsubscribe();
-      }
-      if (stompClient.connected) {
-        stompClient.disconnect(() => console.log('🛑 STOMP disconnected'));
+      if (subscriptionRef.current) subscriptionRef.current.unsubscribe();
+      if (stompClientRef.current?.connected) {
+        stompClientRef.current.disconnect(() => {
+          console.log('🛑 STOMP disconnected');
+        });
       }
     };
   }, [conversationId, token]);
@@ -59,7 +77,6 @@ export const useChatSocket = (conversationId, token) => {
     };
 
     stompClientRef.current.send('/app/send-message', {}, JSON.stringify(payload));
-    // ❌ KHÔNG setMessages ở đây nữa vì server sẽ phản hồi lại
   };
 
   return { messages, sendMessage, isConnected };

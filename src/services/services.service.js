@@ -43,4 +43,14 @@ export const servicesService =  {
             throw error
         }
     },
+    getAllMostService : async() =>{
+        try {
+            const res =  await axios.get(`${API_URL}/service/getMostPopular`);
+            return res.data
+        } catch (error) {
+            console.log(error);
+            throw error
+        }
+
+    },
 }

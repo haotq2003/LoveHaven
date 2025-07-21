@@ -164,7 +164,7 @@ const handleSubmitFeedback = async () => {
                
                 </td>
                 <td>
-                     {booking.status === 'COMPLETED' && (
+                     {booking.status === 'PAID' && (
                     <div className="mt-2">
                       <button
                         onClick={() => handleReview(booking)}

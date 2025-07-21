@@ -161,11 +161,11 @@ const [manualEndTime, setManualEndTime] = useState(null);
 
       <div className="flex space-x-2">
         
-      <button 
+    <button 
   onClick={() => handleOpenExamModal(appointment)}
-  disabled={appointment.status === 'COMPLETED'}
+  disabled={appointment.status === 'PAID'}
   className={`flex items-center space-x-1 px-3 py-1 text-white rounded-md transition-colors text-sm 
-    ${appointment.status === 'COMPLETED' ? 'bg-red-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+    ${appointment.status === 'PAID' ? 'bg-red-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
 >
   <Edit className="w-4 h-4" />
   <span>Khám</span>
@@ -200,10 +200,10 @@ const handleConfirmExam = async () => {
 
     message.success('Đã cập nhật thời gian khám thành công!');
 
-    // ✅ Trừ tiền từ ví
+    // Trừ tiền từ ví
     try {
     await walletService.payBooking(currentAppointment.id);
-       await bookingService.updateStatusBooking(currentAppointment.id, 'COMPLETED');
+      //  await bookingService.updateStatusBooking(currentAppointment.id, 'COMPLETED');
         message.success('Thanh toán thành công!');
         fetchBooking(); // reload lại danh sách
       

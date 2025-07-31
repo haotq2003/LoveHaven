@@ -1,72 +1,101 @@
 import React, { useEffect, useState } from 'react';
 import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { servicesService } from '../../services/services.service';
-import { Button, Form, message, Modal, Table, Input, InputNumber, Select, Popconfirm } from 'antd';
+import {
+  Button,
+  Form,
+  message,
+  Modal,
+  Table,
+  Input,
+  InputNumber,
+  Select,
+  Popconfirm,
+} from 'antd';
+import ImageUploader from '../../components/common/ImageUploader';
+
 
 const Services = () => {
-  
   const [services, setServices] = useState([]);
-   const [page, setPage] = useState(0);
+  const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-    const [totalItems, setTotalItems] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [isModalOpen,setIsModalOpen] = useState(false);
-const [isEditMode, setIsEditMode] = useState(false);
-const [currentService, setCurrentService] = useState(null);
-const [form] = Form.useForm();
- useEffect(()=>{
-getAllServices();
- },[page,size])
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [currentService, setCurrentService] = useState(null);
+  const [form] = Form.useForm();
 
-const getAllServices =  async () =>{
-      setLoading(true);
-try {
-  const res = await servicesService.getAllServices(page, size);
-  setServices(res.data.content)
-  console.log(res.data.content)
-} catch (error) {
-  console.log(error)
-}
-}
+  const [imageUrl, setImageUrl] = useState('');
+  const [imagePublicId, setImagePublicId] = useState('');
 
-const handleSubmit = async()  =>{
-try {
-  const values = await  form.validateFields();
-
-  if(isEditMode && currentService)  {
-    await servicesService.updateService(values,currentService.id);
-        message.success("Cập nhật dịch vụ thành công!");
-  }else{
-    await servicesService.createService(values);
-      message.success("Tạo dịch vụ thành công!");
-  }
-    setIsModalOpen(false);
+  useEffect(() => {
     getAllServices();
-} catch (error) {
-  console.log(error)
-  message.error("Có lỗi  xảy  ra")
-}
-}
-const  handleDelete = async  (serviceId) =>{
-  try{
+  }, [page, size]);
 
-  await  servicesService.deleteService(serviceId);
-  message.success("Xoá dịch vụ thành công!");
-  getAllServices();
-  }catch(error){
-    console.log(error);
-    message.error("Xoá thất bại!");
-  }
-}
+  const getAllServices = async () => {
+    setLoading(true);
+    try {
+      const res = await servicesService.getAllServices(page, size);
+      setServices(res.data.content);
+      setTotalItems(res.data.totalElements);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const columns = [
-{
+  const handleImageUploaded = (url, publicId) => {
+    setImageUrl(url);
+    setImagePublicId(publicId);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+
+      const dataToSend = {
+        ...values,
+        imageUrl,
+        consultantProfileIds: [1073741824], // bạn có thể thay bằng Select nếu cần
+      };
+
+      if (isEditMode && currentService) {
+        await servicesService.updateService(dataToSend, currentService.id);
+        message.success('Cập nhật dịch vụ thành công!');
+      } else {
+        await servicesService.createService(dataToSend);
+        message.success('Tạo dịch vụ thành công!');
+      }
+
+      setIsModalOpen(false);
+      getAllServices();
+    } catch (error) {
+      console.log(error);
+      message.error('Có lỗi xảy ra');
+    }
+  };
+
+  const handleDelete = async (serviceId) => {
+    try {
+      await servicesService.deleteService(serviceId);
+      message.success('Xoá dịch vụ thành công!');
+      getAllServices();
+    } catch (error) {
+      console.log(error);
+      message.error('Xoá thất bại!');
+    }
+  };
+
+  const columns = [
+    {
       title: 'Tên dịch vụ',
       dataIndex: 'name',
       key: 'name',
     },
- {
+    {
       title: 'Giá',
       dataIndex: 'pricePerHour',
       key: 'pricePerHour',
@@ -78,105 +107,128 @@ const columns = [
       key: 'description',
       ellipsis: true,
     },
- {
-  title: 'Hành động',
-  key: 'action',
-  render: (_, record) => (
-    <div className="flex gap-2">
-      <Button icon={<FaEdit />} onClick={() => openEditModal(record)}>Sửa</Button>
-     <Popconfirm
-title="Bạn có chắc chắn muốn xoá dịch vụ này?"
-onConfirm={() => handleDelete(record.id)}
-  okText="Xoá"
-          cancelText="Hủy"
-
-
-     >
-      <Button icon={<FaTrash />} danger>
-            Xoá
+    {
+      title: 'Ảnh',
+      dataIndex: 'imageUrl',
+      key: 'imageUrl',
+      render: (url) =>
+        url ? (
+          <img
+            src={url}
+            alt="Service"
+            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 8 }}
+          />
+        ) : (
+          'Chưa có'
+        ),
+    },
+    {
+      title: 'Hành động',
+      key: 'action',
+      render: (_, record) => (
+        <div className="flex gap-2">
+          <Button icon={<FaEdit />} onClick={() => openEditModal(record)}>
+            Sửa
           </Button>
-        </Popconfirm>
-    </div>
-  )
-}
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xoá dịch vụ này?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Xoá"
+            cancelText="Hủy"
+          >
+            <Button icon={<FaTrash />} danger>
+              Xoá
+            </Button>
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
 
-]
- const handleTableChange = (pagination) => {
-    setPage(pagination.current - 1); 
+  const handleTableChange = (pagination) => {
+    setPage(pagination.current - 1);
     setSize(pagination.pageSize);
   };
-  const openCreateModal = () => {
-  setIsEditMode(false);
-  form.resetFields();
-  setIsModalOpen(true);
-};
 
-const openEditModal =  (service) =>{
-  setIsEditMode(true);
-  setCurrentService(service);
-  form.setFieldsValue({
-    ...service,
-       
-  })
+  const openCreateModal = () => {
+    setIsEditMode(false);
+    form.resetFields();
+    setImageUrl('');
+    setImagePublicId('');
     setIsModalOpen(true);
-}
+  };
+
+  const openEditModal = (service) => {
+    setIsEditMode(true);
+    setCurrentService(service);
+    form.setFieldsValue({
+      name: service.name,
+      description: service.description,
+      pricePerHour: service.pricePerHour,
+    });
+    setImageUrl(service.imageUrl || '');
+    setImagePublicId(service.imagePublicId || '');
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-semibold">Quản lý dịch vụ</h1>
-       <Button onClick={openCreateModal} icon={<FaPlus />} type="primary">Thêm dịch vụ</Button>
-
+        <Button onClick={openCreateModal} icon={<FaPlus />} type="primary">
+          Thêm dịch vụ
+        </Button>
       </div>
-  <Table
-columns={columns}
-dataSource={services}
-rowKey={(record) => record.id}
+
+      <Table
+        columns={columns}
+        dataSource={services}
+        rowKey={(record) => record.id}
+        loading={loading}
         pagination={{
           current: page + 1,
           pageSize: size,
           total: totalItems,
           showSizeChanger: true,
         }}
-       
         onChange={handleTableChange}
-  />
-     <Modal
-  title={isEditMode ? "Cập nhật dịch vụ" : "Tạo dịch vụ mới"}
-  open={isModalOpen}
-  onOk={handleSubmit}
-  onCancel={() => setIsModalOpen(false)}
-  okText={isEditMode ? "Cập nhật" : "Tạo mới"}
->
-  <Form form={form} layout="vertical">
-    <Form.Item name="name" label="Tên dịch vụ" rules={[{ required: true, message: 'Vui lòng nhập tên' }]}>
-      <Input />
-    </Form.Item>
-
-    <Form.Item name="description" label="Mô tả">
-      <Input.TextArea rows={3} />
-    </Form.Item>
-
-    <Form.Item name="pricePerHour" label="Giá mỗi giờ" rules={[{ required: true }]}>
-      <InputNumber
-        min={0}
-        style={{ width: '100%' }}
-        formatter={value => `${value} VND`}
       />
-    </Form.Item>
 
-    <Form.Item name="consultantProfileIds" label="ID hồ sơ tư vấn" >
-      <Select
-        mode="multiple"
-        placeholder="Nhập ID hoặc chọn"
-        options={[
-          { value: 1073741824, label: 'Tư vấn viên 1' },
-         
-        ]}
-      />
-    </Form.Item>
-  </Form>
-</Modal>
+      <Modal
+        title={isEditMode ? 'Cập nhật dịch vụ' : 'Tạo dịch vụ mới'}
+        open={isModalOpen}
+        onOk={handleSubmit}
+        onCancel={() => setIsModalOpen(false)}
+        okText={isEditMode ? 'Cập nhật' : 'Tạo mới'}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="name"
+            label="Tên dịch vụ"
+            rules={[{ required: true, message: 'Vui lòng nhập tên' }]}
+          >
+            <Input />
+          </Form.Item>
 
+          <Form.Item name="description" label="Mô tả">
+            <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item
+            name="pricePerHour"
+            label="Giá mỗi giờ"
+            rules={[{ required: true, message: 'Vui lòng nhập giá' }]}
+          >
+           <InputNumber
+  min={0}
+  style={{ width: '100%' }}
+/>
+
+          </Form.Item>
+
+          <ImageUploader onImageUploaded={handleImageUploaded} />
+        </Form>
+      </Modal>
     </div>
   );
 };

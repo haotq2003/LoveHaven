@@ -36,5 +36,18 @@ export const paymentService = {
       console.error('Lỗi khi cập nhật trạng thái thanh toán:', error);
       throw error;
     }
+  },
+  async getPaymentByEmail(email) {
+    try {
+      const response = await axios.get(`${API_URL}/payment/get-by-email`, {
+        params: {
+          email
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin thanh toán:', error);
+      throw error;
+    }
   }
 };

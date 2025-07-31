@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { bookingService } from '../../services/booking.service';
-  import { Modal, Input, message } from 'antd';
+import { Modal, Input, message } from 'antd';
 import { FeedBackService } from '../../services/feedback.service';
+import { blogService } from '../../services/blog.service';
 const BookingHistory = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,40 +14,8 @@ const BookingHistory = () => {
 const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
 const [feedbackContent, setFeedbackContent] = useState('');
 const [selectedBooking, setSelectedBooking] = useState(null);
-  const [relatedServices, setRelatedServices] = useState([
-    {
-      id: 1,
-      title: 'CÁCH XÂY DỰNG',
-      image: '/src/assets/tuvan2.jpg',
-      category: 'EVERY DAY',
-      duration: '30 phút',
-      description: 'CÁCH XÂY DỰNG MỐI QUAN HỆ GẮN KẾT VỚI CON CÁI'
-    },
-    {
-      id: 2,
-      title: 'HỖ TRỢ GIA ĐÌNH',
-      image: '/src/assets/tuvan3.jpg',
-      category: 'MONDAY',
-      duration: '60 phút',
-      description: 'HỖ TRỢ GIA ĐÌNH QUA GIAI ĐOẠN KHỦNG HOẢNG, HÒA HỢP'
-    },
-    {
-      id: 3,
-      title: 'Cách Cải Thiện Mối Quan Hệ',
-      image: '/src/assets/anhtuvan.jpg',
-      category: 'TO BE DECIDED',
-      duration: '60 phút',
-      description: 'Cải thiện mối quan hệ'
-    },
-    {
-      id: 4,
-      title: 'LÀM THẾ NÀO ĐỂ GIAO T',
-      image: '/src/assets/thinhlike.jpg',
-      category: 'TO BE DECIDED',
-      duration: '60 phút',
-      description: 'LÀM THẾ NÀO ĐỂ GIAO TIẾP HIỆU QUẢ TRONG HÔN NHÂN'
-    }
-  ]);
+const [blogs, setBlogs] = useState([]);
+ 
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -70,6 +39,20 @@ const [selectedBooking, setSelectedBooking] = useState(null);
     };
 
     fetchBookings();
+  }, []);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await blogService.getAllBlogs();
+        console.log(response.data)
+        setBlogs(response.data || []);
+      } catch (err) {
+        console.error('Lỗi khi lấy danh sách blogs:', err);
+      }
+    };
+
+    fetchBlogs();
   }, []);
 
   if (loading)
@@ -132,7 +115,7 @@ const handleSubmitFeedback = async () => {
                 <td className="py-4">
                   <div className="flex items-center gap-4">
                     <img
-                      src={booking.service.image || '/src/assets/tuvan2.jpg'}
+                      src={booking.service.imageUrl || '/src/assets/tuvan2.jpg'}
                       alt={booking.service.name}
                       className="w-16 h-12 object-cover rounded"
                     />
@@ -196,9 +179,10 @@ const handleSubmitFeedback = async () => {
   />
 </Modal>
 
+      
       <div className="mb-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Các dịch vụ liên quan</h2>
+          <h2 className="text-2xl font-bold">Các bài viết</h2>
           <div className="flex gap-2">
             <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
               <span className="sr-only">Lùi về</span>
@@ -212,31 +196,30 @@ const handleSubmitFeedback = async () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedServices.map((service) => (
-            <div key={service.id} className="group relative">
+          {blogs.map((blog) => (
+            <div key={blog.id} className="group relative">
               <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden bg-gray-100">
                 <img
-                  src={service.image}
-                  alt={service.title}
+                  src={blog.thumbnailUrl || '/src/assets/tuvan2.jpg'}
+                  alt={blog.title}
                   className="object-cover w-full h-48"
                 />
               </div>
               <div className="mt-4">
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                  <span className="bg-pink-100 text-pink-800 px-2 py-1 rounded">
-                    {service.category}
-                  </span>
-                  <span>⏱ {service.duration}</span>
+                  {/* <span className="bg-pink-100 text-pink-800 px-2 py-1 rounded">
+                    {new Date(blog.createdAt).toLocaleDateString('vi-VN')}
+                  </span> */}
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {service.title}
+                  {blog.title}
                 </h3>
-                <p className="text-sm text-gray-500 mb-4">{service.description}</p>
+                <p className="text-sm text-gray-500 mb-4">{blog.description?.substring(0, 100)}...</p>
                 <Link
-                  to="#"
+                  to={`/blog/${blog.id}`}
                   className="text-pink-600 hover:text-pink-700 text-sm font-medium"
                 >
-                  Read More →
+                  Đọc thêm →
                 </Link>
               </div>
             </div>

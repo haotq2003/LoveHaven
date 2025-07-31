@@ -21,6 +21,7 @@ const Profile = () => {
         const accountId = tokenData.id;
 
         const response = await userService.viewInforUser(accountId);
+        console.log(response.data)
         setUserInfo(response.data);
       } catch (err) {
         setError(err.message || 'Đã xảy ra lỗi khi tải thông tin');
@@ -54,7 +55,7 @@ const Profile = () => {
       <Card title="Thông tin cá nhân" bordered={false} style={{ maxWidth: 700, margin: '0 auto' }}>
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Email">{userInfo?.email}</Descriptions.Item>
-          <Descriptions.Item label="Họ và tên">{userInfo?.fullName}</Descriptions.Item>
+          <Descriptions.Item label="Họ và tên">{userInfo?.name}</Descriptions.Item>
           <Descriptions.Item label="Số điện thoại">{userInfo?.phone || 'Chưa cập nhật'}</Descriptions.Item>
           <Descriptions.Item label="Địa chỉ">{userInfo?.address || 'Chưa cập nhật'}</Descriptions.Item>
         </Descriptions>

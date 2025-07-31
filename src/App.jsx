@@ -34,6 +34,7 @@ import Wallet from './pages/user/Wallet'
 import VNPayReturn from './pages/user/VNPayReturn'
 import Chat from './pages/consultant/Chat'
 import { ChatProvider } from './context/ChatContext'
+import PaymentSuccess from './pages/user/PaymentSuccess'
 
 
 
@@ -60,6 +61,7 @@ function App() {
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/vnpay-return" element={<VNPayReturn />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
       </Route>
       <Route path="/manager" element={<ManagerLayout />}>

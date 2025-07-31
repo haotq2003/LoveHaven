@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import React, { useEffect, useState, useCallback } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
 import { bookingService } from '../../services/booking.service'; // Import bookingService
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import { paymentService } from '../../services/payment.service';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -10,9 +10,14 @@ import timezone from 'dayjs/plugin/timezone';
 import { walletService } from '../../services/wallet.service';
 const ServiceDetail = () => {
   dayjs.extend(utc);
-dayjs.extend(timezone);
+  dayjs.extend(timezone);
   const { id } = useParams();
+  const navigate = useNavigate();
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [bookingId, setBookingId] = useState(null);
+  const [countdown, setCountdown] = useState(15);
   
   const getUserInfo = () => {
     const token = localStorage.getItem('token');
@@ -115,7 +120,7 @@ dayjs.extend(timezone);
       },
       {
         question: "Làm thế nào để chọn chuyên gia phù hợp?",
-        answer: "Hệ thống sẽ gợi ý chuyên gia phù hợp dựa trên vấn đề của bạn, hoặc bạn có thể chọn chuyên gia theo hồ sơ và đánh giá từ người dùng khác."
+        answer: "Hệ thống sẽ gợi ý chuyên gia phù hợp dựa trên vấn đề của bạn, hoặc bạn có thể chọn chuyên gia theo hồ sơ đánh giá từ người dùng khác."
       },
       {
         question: "Tôi có thể đặt nhiều giờ tư vấn cùng lúc không?",
@@ -201,17 +206,41 @@ dayjs.extend(timezone);
           const bookingId = bookingResponse.data;
 
           // 2. Gọi API đặt cọc VNPay
-          try {
-            const depositData = await walletService.depositBooking(bookingId)
-            message.success('Thanh toán thành công');
-            
-          
-              
-           
-          } catch (depositError) {
-            console.error('Failed to initialize payment:', depositError);
-            message.error(' Thanh toán thất bại. Vui lòng thử lại.');
-          }
+         Modal.confirm({
+  title: 'Xác nhận thanh toán',
+  content: 'Bạn có chắc muốn thanh toán và đặt lịch tư vấn?',
+  okText: 'Xác nhận',
+  cancelText: 'Hủy',
+  onOk: async () => {
+    try {
+      const depositData = await walletService.depositBooking(bookingId);
+      message.success('Đặt lịch và thanh toán thành công');
+
+      // 👉 Chuyển đến trang thanh toán thành công kèm theo thông tin
+      navigate('/payment-success', {
+        state: {
+          bookingData,
+          bookingId,
+          amount: service.price,
+        },
+      });
+
+      // Reset form
+      setBookingData({
+        city: '',
+        address: '',
+        date: '',
+        time: ''
+      });
+      setSelectedDistricts([]);
+      setShowBookingForm(false);
+    } catch (depositError) {
+      console.error('Failed to initialize payment:', depositError);
+      message.error('Thanh toán thất bại. Vui lòng thử lại.');
+    }
+  }
+});
+
 
           // Reset form
           setBookingData({

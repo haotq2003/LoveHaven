@@ -225,7 +225,7 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center text-gray-500">
                     <Clock size={16} className="mr-1" />
-                    <span className="text-sm">{appointment.service?.pricePerHour || 0}Đ</span>
+                    <span className="text-sm">{formatCurrency(appointment.service?.pricePerHour || 0)}</span>
                   </div>
                   <button 
                     onClick={() => handleShowDetails(appointment)} 

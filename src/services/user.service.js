@@ -38,5 +38,23 @@ try {
   throw error
 }
   },
+  updateUser : async (id,profile) =>{
+    try {
+      const res = await axios.put(`${API_URL}/update/${id}`,profile)
+       return res.data
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  },
+  deleteUser : async (id) =>{
+    try {
+      const res = await axios.delete(`${API_URL}/admin/delete/${id}`)
+      return res.data
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
   
 }

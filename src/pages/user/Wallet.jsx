@@ -66,7 +66,10 @@ const Wallet = () => {
       const token = localStorage.getItem('token');
       const tokenData = jwtDecode(token);
       const userId = tokenData.id;
-      const returnUrl = 'http://localhost:5173/vnpay-return';
+     const isLocal = window.location.hostname === 'localhost';
+const returnUrl = isLocal 
+  ? 'http://localhost:5173/vnpay-return' 
+  : 'https://myapp.com/vnpay-return';
 
       // Log API parameters after all variables are initialized
       console.log('API Parameters for createVNPay:', {
@@ -76,6 +79,7 @@ const Wallet = () => {
       });
 
       const res = await walletService.createVNPay(userId, amount, returnUrl);
+      console.log(res.data)
       setIsModalOpen(false);
       setAmount('');
       window.location.href = res.data; 

@@ -49,5 +49,17 @@ export const paymentService = {
       console.error('Lỗi khi lấy thông tin thanh toán:', error);
       throw error;
     }
+  },
+  getPaymentInmonthAndYear: async (year, month) => {
+  try {
+    const response = await axios.get(`${API_URL}/payment/get-by-all-total-income-in-month`, {
+      params: { year, month }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy thông tin thanh toán:', error);
+    throw error;
   }
+}
+
 };

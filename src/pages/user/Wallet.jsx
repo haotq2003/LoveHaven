@@ -69,7 +69,7 @@ const Wallet = () => {
      const isLocal = window.location.hostname === 'localhost';
 const returnUrl = isLocal 
   ? 'http://localhost:5173/vnpay-return' 
-  : 'https://myapp.com/vnpay-return';
+  : 'https://love-haven.vercel.app/vnpay-return';
 
       // Log API parameters after all variables are initialized
       console.log('API Parameters for createVNPay:', {

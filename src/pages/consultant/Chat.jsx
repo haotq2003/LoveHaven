@@ -16,7 +16,7 @@ const Chat = () => {
 
   useEffect(() => {
     const fetchConversations = async () => {
-      const res = await fetch('http://localhost:8080/conversation/my-conversations', {
+      const res = await fetch('https://summer2025-exe-be.onrender.com/conversation/my-conversations', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -28,7 +28,7 @@ const Chat = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       if (!conversationId) return;
-      const res = await fetch(`http://localhost:8080/messages/conversation/${conversationId}`, {
+      const res = await fetch(`https://summer2025-exe-be.onrender.com/messages/conversation/${conversationId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

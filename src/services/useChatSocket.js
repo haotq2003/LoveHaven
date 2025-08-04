@@ -11,7 +11,7 @@ export const useChatSocket = (conversationId, token) => {
   useEffect(() => {
     if (!token?.token) return;
 
-    const socket = new SockJS(`http://localhost:8080/ws?token=${token.token}`);
+    const socket = new SockJS(`https://summer2025-exe-be.onrender.com/ws?token=${token.token}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

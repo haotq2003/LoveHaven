@@ -28,7 +28,7 @@ export const useChatSocket = (conversationId, token) => {
       return;
     }
 
-    const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
+    const socket = new SockJS(`https://summer2025-exe-be.onrender.com/ws?token=${jwtToken}`);
     const stompClient = Stomp.over(socket);
     stompClient.debug = () => {};
     stompClientRef.current = stompClient;

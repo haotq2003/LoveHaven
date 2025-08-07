@@ -19,7 +19,8 @@ const [feedbacks, setFeedbacks] = useState([]);
       const res = await consultantService.getConsultantById(accountId)
       console.log(res.data)
       setExpert(res.data)
-          const feedbackRes = await FeedBackService.getFeedbackByTherapist(res.data.id);
+          const feedbackRes = await FeedBackService.getFeedbackByTherapist(res.data.account.id);
+          console.log(feedbackRes.data)
     setFeedbacks(feedbackRes.data);
     } catch (error) {
       console.error('Error fetching expert details:', error)
@@ -63,7 +64,7 @@ const [feedbacks, setFeedbacks] = useState([]);
         <li key={fb.id} className="border p-4 rounded-md shadow-sm bg-gray-50">
           <p className="text-gray-800">{fb.body}</p>
           <p className="text-sm text-gray-500 mt-2">
-            Khách hàng ID: {fb.customerId}
+            Khách hàng : {fb.customerName}
           </p>
         </li>
       ))}

@@ -60,6 +60,18 @@ export const paymentService = {
     console.error('Lỗi khi lấy thông tin thanh toán:', error);
     throw error;
   }
+},
+getPaymentBySalary : async (year, month) => {
+  try {
+    const response = await axios.get(`${API_URL}/payment/get-by-come-in-month`, {
+      params: { year, month }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy thông tin thanh toán:', error);
+    throw error;
+  }
 }
+
 
 };

@@ -176,13 +176,8 @@ const Dashboard = () => {
       {/* Filters */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">Sort By:</span>
-          <button className="px-4 py-2 border rounded-lg flex items-center space-x-2 bg-white">
-            <span>Deadline</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+        
+        
         </div>
       </div>
 
@@ -205,7 +200,7 @@ const Dashboard = () => {
             <div key={appointment.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
               <div className="p-4">
                 <img 
-                  src="/src/assets/anhtuvan.jpg" 
+                  src={appointment?.service.imageUrl}
                   alt="Appointment" 
                   className="w-full h-40 object-cover rounded-lg mb-4" 
                 />
@@ -241,56 +236,7 @@ const Dashboard = () => {
       </div>
 
       {/* New Appointments Section */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Lịch hẹn mới</h2>
-          <div className="flex space-x-2">
-            <button className="p-1 rounded-full border hover:bg-gray-100">
-              <ChevronLeft size={20} />
-            </button>
-            <button className="p-1 rounded-full border hover:bg-gray-100">
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {newAppointments.map((appointment) => (
-            <div key={appointment.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="p-4">
-                <img 
-                  src="/src/assets/tuvan2.jpg" 
-                  alt="Appointment" 
-                  className="w-full h-40 object-cover rounded-lg mb-4" 
-                />
-                <h3 className="font-medium text-lg mb-3">{appointment.title}</h3>
-                
-                <div className="mb-3">
-                  <p className="text-right text-sm font-medium text-orange-500 mb-1">{appointment.status}</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-[#FF6B6B] h-2 rounded-full" 
-                      style={{ width: `${appointment.progress}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center text-gray-500">
-                    <span className="text-sm">Còn {appointment.daysLeft} ngày</span>
-                  </div>
-                  <button 
-                    className="px-3 py-1 bg-[#FF6B6B] text-white rounded-md text-sm hover:bg-[#FF5252] transition-colors"
-                    onClick={() => navigate(`/consultant/appointments/${appointment.id}`)}
-                  >
-                    Chi tiết
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+     
 
       {/* Modal for Booking Details */}
       {showModal && selectedBooking && (
@@ -363,7 +309,7 @@ const Dashboard = () => {
                       <label className="block text-sm font-medium text-gray-600 mb-1">Địa chỉ:</label>
                       <div className="flex items-center">
                         <MapPin size={16} className="text-purple-500 mr-2" />
-                        <p className="text-gray-800">{selectedBooking.customer?.address || 'Không xác định'}</p>
+                        <p className="text-gray-800">{selectedBooking?.address || 'Không xác định'}</p>
                       </div>
                     </div>
                   </div>

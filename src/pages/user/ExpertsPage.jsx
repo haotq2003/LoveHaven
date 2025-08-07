@@ -79,17 +79,7 @@ const ExpertsPage = () => {
         ))}
       </div>
 
-      <section className="mt-20 bg-[#FFF0F5] rounded-2xl p-12 text-center">  {/* Thay đổi từ #FFE2E2 sang #FFF0F5 (hồng nhạt khác) */}
-        <h2 className="text-3xl font-semibold text-black mb-6">
-          Trở thành chuyên gia của Love Haven
-        </h2>
-        <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-8 leading-relaxed">
-          Nếu bạn là chuyên gia trong lĩnh vực tâm lý, tư vấn tình cảm hoặc hôn nhân gia đình, hãy tham gia đội ngũ của chúng tôi để giúp đỡ nhiều người hơn nữa tìm thấy hạnh phúc.
-        </p>
-        <button onClick={hanldeRegisternow}  className="bg-gradient-to-r from-[#FF6B6B] to-[#9061F9] hover:from-[#FF5252] hover:to-[#7C4DEF] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-md transform hover:scale-105">  {/* Thêm gradient từ hồng sang tím */}
-          Ứng tuyển ngay
-        </button>
-      </section>
+      
     </div>
   )
 }

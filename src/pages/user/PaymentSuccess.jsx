@@ -20,9 +20,10 @@ const PaymentSuccess = () => {
       <p className="text-lg mb-6">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
 
       <div className="text-left space-y-2 text-gray-700">
-        <p><strong>Mã lịch hẹn:</strong> {bookingId}</p>
+       
         <p><strong>Thành phố:</strong> {bookingData.city}</p>
-        <p><strong>Quận/Huyện:</strong> {bookingData.address}</p>
+       <p><strong>Địa chỉ:</strong> {bookingData.streetAddress}, {bookingData.district}</p>
+
         <p><strong>Thời gian:</strong> {bookingData.date} lúc {bookingData.time}</p>
         <p><strong>Chi phí:</strong> {amount.toLocaleString()} VNĐ</p>
       </div>

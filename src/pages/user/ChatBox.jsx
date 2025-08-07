@@ -32,7 +32,7 @@ const ChatToggleBox = () => {
 
   const fetchAccountsByRoles = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/get-accounts-by-role', {
+      const response = await axios.get('https://summer2025-exe-be.onrender.com/get-accounts-by-role', {
         params: { roles: selectedRoles },
         paramsSerializer: (params) =>
           params.roles.map((r) => `roles=${encodeURIComponent(r)}`).join('&'),

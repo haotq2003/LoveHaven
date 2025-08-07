@@ -11,7 +11,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', icon: <BarChart3 size={20} />, path: '/consultant' },
     { name: 'Lịch hẹn', icon: <Calendar size={20} />, path: '/consultant/appointments' },
-    { name: 'Khách hàng', icon: <Users size={20} />, path: '/consultant/clients' },
+    // { name: 'Khách hàng', icon: <Users size={20} />, path: '/consultant/clients' },
     { name: 'Tin nhắn', icon: <MessageSquare size={20} />, path: '/consultant/chat' },
   ]
   const handleLogout = () => {

@@ -36,6 +36,7 @@ import Chat from './pages/consultant/Chat'
 import { ChatProvider } from './context/ChatContext'
 import PaymentSuccess from './pages/user/PaymentSuccess'
 import Revenue from './pages/manager/Revenue'
+import Appointments from './pages/manager/Appointments'
 
 
 
@@ -71,7 +72,8 @@ function App() {
           <Route path="users" element={<Customers />} />
           <Route path="blog" element={<Blog />} />
           <Route path="consultant-accounts" element={<ConsultantAccounts />} />
-             <Route path="revenue" element={<Revenue />} />
+          <Route path="revenue" element={<Revenue />} />
+          <Route path="appointments" element={<Appointments />} />
           {/* Thêm các routes khác cho manager ở đây */}
       </Route>
       <Route path="/consultant" element={<ConsultantLayout />}>

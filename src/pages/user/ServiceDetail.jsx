@@ -135,10 +135,11 @@ const ServiceDetail = () => {
   
   // State cho form đặt lịch (chỉ giữ lại các trường cần thiết)
   const [bookingData, setBookingData] = useState({
-    city: '',
-    address: '',
-    date: '',
-    time: ''
+   city: '',
+  district: '',
+  streetAddress: '',
+  date: '',
+  time: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -159,7 +160,8 @@ const ServiceDetail = () => {
       setBookingData(prev => ({
         ...prev,
         city: value,
-        address: ''
+         district: '',
+      streetAddress: ''
       }));
     }
   };
@@ -168,7 +170,8 @@ const ServiceDetail = () => {
     const newErrors = {};
     
     if (!bookingData.city) newErrors.city = 'Vui lòng chọn thành phố';
-    if (!bookingData.address) newErrors.address = 'Vui lòng chọn quận/huyện';
+    if (!bookingData.district) newErrors.district = 'Vui lòng chọn quận/huyện';
+if (!bookingData.streetAddress) newErrors.streetAddress = 'Vui lòng nhập số nhà và tên đường';
     if (!bookingData.date) newErrors.date = 'Vui lòng chọn ngày';
     if (!bookingData.time) newErrors.time = 'Vui lòng chọn giờ';
     
@@ -192,7 +195,7 @@ const ServiceDetail = () => {
       const bookingPayload = {
         accountId: getUserInfo(), 
         serviceId: parseInt(id),
-        address: bookingData.address,
+         address: `${bookingData.streetAddress}, ${bookingData.district}`,
         city: bookingData.city,
         preferredTime: dayjs(`${bookingData.date}T${bookingData.time}`).format('YYYY-MM-DDTHH:mm:ss'),
       };
@@ -389,28 +392,44 @@ const ServiceDetail = () => {
                 {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
               </div>
               
-              {/* Quận/Huyện */}
-              <div>
-                <label htmlFor="address" className="block text-sm font-medium text-[#FF6B6B] mb-1">
-                  Quận/Huyện
-                </label>
-                <select
-                  id="address"
-                  name="address"
-                  value={bookingData.address}
-                  onChange={handleChange}
-                  disabled={!bookingData.city}
-                  className={`w-full px-4 py-2 border ${errors.address ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] ${!bookingData.city ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                >
-                  <option value="">Chọn quận/huyện</option>
-                  {selectedDistricts.map((district) => (
-                    <option key={district} value={district}>
-                      {district}
-                    </option>
-                  ))}
-                </select>
-                {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
-              </div>
+             {/* Quận/Huyện */}
+<div>
+  <label htmlFor="district" className="block text-sm font-medium text-[#FF6B6B] mb-1">
+    Quận/Huyện
+  </label>
+  <select
+    id="district"
+    name="district"
+    value={bookingData.district}
+    onChange={handleChange}
+    disabled={!bookingData.city}
+    className={`w-full px-4 py-2 border ${errors.district ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] ${!bookingData.city ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+  >
+    <option value="">Chọn quận/huyện</option>
+    {selectedDistricts.map((district) => (
+      <option key={district} value={district}>
+        {district}
+      </option>
+    ))}
+  </select>
+  {errors.district && <p className="mt-1 text-sm text-red-600">{errors.district}</p>}
+</div>
+
+{/* Số nhà, tên đường */}
+<div>
+  <label htmlFor="streetAddress" className="block text-sm font-medium text-[#FF6B6B] mb-1">
+    Số nhà, tên đường
+  </label>
+  <input
+    type="text"
+    id="streetAddress"
+    name="streetAddress"
+    value={bookingData.streetAddress}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 border ${errors.streetAddress ? 'border-red-300' : 'border-[#FFB6C1]'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]`}
+  />
+  {errors.streetAddress && <p className="mt-1 text-sm text-red-600">{errors.streetAddress}</p>}
+</div>
               
               {/* Ngày hẹn */}
               <div>

@@ -15,10 +15,10 @@ const Sidebar = () => {
     { name: 'Dashboard', icon: <BarChart3 size={20} />, path: '/manager' },
     { name: 'Dịch vụ', icon: <MessageSquare size={20} />, path: '/manager/services' },
     { name: 'Khách hàng', icon: <Users size={20} />, path: '/manager/users' },
-    { name: 'Nguồn thu', icon: <BarChart3 size={20} />, path: '/manager/revenue' },
+    { name: 'Doanh thu', icon: <BarChart3 size={20} />, path: '/manager/revenue' },
     { name: 'Chuyên gia', icon: <Users size={20} />, path: '/manager/consultant-accounts' },
     { name: 'Tin tức', icon: <FileText size={20} />, path: '/manager/blog' },
-    { name: 'Lịch hẹn', icon: <Calendar size={20} />, path: '/manager/appointments' },
+    { name: 'Nguồn chi', icon: <BarChart3 size={20} />, path: '/manager/appointments' },
   ]
  
   return (

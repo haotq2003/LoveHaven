@@ -41,7 +41,7 @@ const [feedbacks, setFeedbacks] = useState([]);
         </div>
         <div className="p-8">
           <h2 className="text-3xl font-bold mb-2">{expert.account.name}</h2>
-          <p className="text-gray-600 mb-4">{expert.description || 'Không có mô tả.'}</p>
+          {/* <p className="text-gray-600 mb-4">{expert.description || 'Không có mô tả.'}</p> */}
 
           <div className="mb-4">
             <strong>Chuyên môn:</strong> {expert.expertise}

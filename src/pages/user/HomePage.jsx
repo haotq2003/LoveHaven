@@ -15,8 +15,24 @@ import ScrollFadeInSection from '../../common/ScrollFadeInSection'
 import { consultantService } from '../../services/consultants.service'
 import ChatBox from './ChatBox'
 import ChatToggleBox from './ChatBox'
+import { blogService } from '../../services/blog.service'
 
 const HomePage = () => {
+const [blog,setBlog] = useState([]);
+const fetchBlog = async () =>{
+  try {
+    const response = await blogService.getAllBlogs();
+    console.log(response.data)
+        setBlog(response.data);
+  } catch (error) {
+    console.error('Failed to fetch blog:', error);
+  }
+
+}
+useEffect(() => {
+  fetchBlog();
+}, [])
+
 
   
   return (
@@ -50,63 +66,37 @@ const HomePage = () => {
 </div>
 
 
-      {/* Hiểu Biết Bản Thân Section */}
-     <ScrollFadeInSection>
-     <div className="container mx-auto px-4 py-16 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-[#FF6B6B] mb-4">Hiểu Biết Bản Thân Qua Tư Vấn Tâm Lý</h2>
-            <p className=" mb-6">Tâm Lý Học Giúp Bạn Sống Tích Cực Hơn Thế Nào?</p>
-            <Link to="/about" className="bg-[#FF6B6B] text-white px-6 py-2 rounded-full inline-block hover:bg-[#FF5252] transition-all duration-300">
-              Xem ngay
-            </Link>
-          </div>
-          <div className=" p-4 rounded-lg flex justify-center">
-            <img src={anh1} alt="Tư vấn tâm lý" className="rounded-lg w-96 h-64 object-cover" />
-          </div>
-        </div>
-      </div>
-     </ScrollFadeInSection>
-
-      {/* Hành Trang Cho Hạnh Phúc Section */}
-     <ScrollFadeInSection>
-     <div className="container mx-auto px-4 py-16 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1 p-4 rounded-lg flex justify-center">
-            <img src={anh1} alt="Cặp đôi hạnh phúc" className="rounded-lg w-96 h-64 object-cover" />
-          </div>
-          <div className="order-1 md:order-2">
-            <h2 className="text-3xl font-bold text-[#FF6B6B] mb-4">Hành Trang Cho Hạnh Phúc</h2>
-            <p className=" mb-6">Giúp bạn vượt qua những khó khăn trong giai đoạn khủng hoảng</p>
-            <Link to="/services" className="bg-[#FF6B6B] text-white px-6 py-2 rounded-full inline-block hover:bg-[#FF5252] transition-all duration-300">
-              Xem ngay
+    {/* Blog Section */}
+<ScrollFadeInSection>
+  <div className="container mx-auto px-4 py-16 max-w-6xl">
+    <h2 className="text-3xl font-bold text-[#FF6B6B] mb-8 text-center">Bài Viết Mới Nhất</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {blog.slice(0, 3).map((item) => (
+        <div
+          key={item.id}
+          className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col"
+        >
+          <img
+            src={item.thumbnailUrl}
+            alt={item.title}
+            className="h-48 w-full object-cover"
+          />
+          <div className="p-4 flex-1 flex flex-col">
+            <h3 className="text-xl font-semibold text-[#FF6B6B] mb-2">{item.title}</h3>
+            <p className="text-gray-700 mb-4 flex-1">{item.summary}</p>
+            <Link
+              to={`/blog/${item.id}`}
+              className="bg-[#FF6B6B] text-white px-4 py-2 rounded-full text-center hover:bg-[#FF5252] transition-all duration-300"
+            >
+              Xem thêm
             </Link>
           </div>
         </div>
-      </div>
-     </ScrollFadeInSection>
-
-      {/* Tư Vấn Tâm Lý Chuyên Sâu Section */}
-     <ScrollFadeInSection>
-     <div className="container mx-auto px-4 py-16 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-[#FF6B6B] mb-4">Tư Vấn Tâm Lý Chuyên Sâu</h2>
-            <p className=" mb-6">
-              Bạn đang cảm thấy căng thẳng, mệt mỏi, phương hướng hay đối mặt người mà mình yêu? Đội ngũ chuyên gia tâm lý của chúng tôi sẽ giúp bạn vượt qua mọi khó khăn, tìm lại cân bằng và niềm vui trong cuộc sống.
-            </p>
-            <Link to="/experts" className="bg-[#FF6B6B] text-white px-6 py-2 rounded-full inline-block hover:bg-[#FF5252] transition-all duration-300">
-              Xem ngay
-            </Link>
-          </div>
-          <div className=" p-4 rounded-lg flex justify-center">
-            <img src={anh1} alt="Tư vấn tâm lý" className="rounded-lg w-96 h-64 object-cover" />
-          </div>
-        </div>
-      </div>
-
+      ))}
+    </div>
+  </div>
 </ScrollFadeInSection>
-      {/* Newsletter Section */}
+
     
 
       {/* Các section khác từ components */}

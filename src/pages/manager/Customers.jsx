@@ -46,7 +46,7 @@ const handleEditSubmit = async () => {
     message.error('Cập nhật thất bại');
   }
 };
-  const fetchUsers = async (page = 1, size = 10) => {
+  const fetchUsers = async (page = 3, size = 10) => {
     setLoading(true);
     try {
       const response = await userService.getAllUsers(page - 1, size);

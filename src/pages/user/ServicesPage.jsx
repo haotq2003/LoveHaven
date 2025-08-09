@@ -71,7 +71,8 @@ const ServicesPage = () => {
             </div>
             <div className="p-6 mt-auto">
               <Link
-                to={`/services/${service.id}`}
+                to={`/services/${service.id}?price=${service.pricePerHour}`}
+
                 className="block w-full bg-[#FF6B6B] hover:bg-[#FF5252] text-white font-medium py-3 px-4 rounded-xl transition-colors duration-300 text-center"
               >
                 {service.highlight ? 'Đăng ký ngay' : 'Tìm hiểu thêm'}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
 import { bookingService } from '../../services/booking.service'; // Import bookingService
 import { message, Modal } from 'antd';
@@ -12,7 +12,10 @@ const ServiceDetail = () => {
   dayjs.extend(utc);
   dayjs.extend(timezone);
   const { id } = useParams();
+    const location = useLocation();
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const price = searchParams.get('price');
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -132,7 +135,13 @@ const ServiceDetail = () => {
       }
     ]
   };
-  
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+    });
+  };
   // State cho form đặt lịch (chỉ giữ lại các trường cần thiết)
   const [bookingData, setBookingData] = useState({
    city: '',
@@ -211,7 +220,8 @@ if (!bookingData.streetAddress) newErrors.streetAddress = 'Vui lòng nhập số
           // 2. Gọi API đặt cọc VNPay
          Modal.confirm({
   title: 'Xác nhận thanh toán',
-  content: 'Bạn có chắc muốn thanh toán và đặt lịch tư vấn?',
+  content: `Bạn có chắc muốn đặt cọc với giá ${formatCurrency(price * 0.5)} và đặt lịch tư vấn?`,
+
   okText: 'Xác nhận',
   cancelText: 'Hủy',
   onOk: async () => {
@@ -239,7 +249,8 @@ if (!bookingData.streetAddress) newErrors.streetAddress = 'Vui lòng nhập số
       setShowBookingForm(false);
     } catch (depositError) {
       console.error('Failed to initialize payment:', depositError);
-      message.error('Thanh toán thất bại. Vui lòng thử lại.');
+      message.error('Số tiền trong ví không đủ để đặt cọc. Vui lòng nạp tiền vào ví');
+ navigate('/wallet')
     }
   }
 });

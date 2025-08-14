@@ -188,9 +188,9 @@ const returnUrl = isLocal
           >
             Nạp tiền
           </button>
-          <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+          {/* <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
             Rút tiền
-          </button>
+          </button> */}
           <button 
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
             onClick={handleOpenHistoryModal}

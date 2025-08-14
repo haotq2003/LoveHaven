@@ -31,9 +31,9 @@ export const consultantService = {
     }
   },
 
-  updateProfileConsultant: async () => {
+  updateProfileConsultant: async (data) => {
     try {
-      const res = await axios.get(`${API_URL}/get-all-consultants`);
+      const res = await axios.put(`${API_URL}/update-consultant`,data);
       return res.data;
     } catch (error) {
       console.log(error);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { formatCurrency } from '../../components/common/formatCurrency';
 
 const PaymentSuccess = () => {
   const location = useLocation();
@@ -25,7 +26,7 @@ const PaymentSuccess = () => {
        <p><strong>Địa chỉ:</strong> {bookingData.streetAddress}, {bookingData.district}</p>
 
         <p><strong>Thời gian:</strong> {bookingData.date} lúc {bookingData.time}</p>
-        <p><strong>Chi phí:</strong> {amount.toLocaleString()} VNĐ</p>
+        <p><strong>Chi phí:</strong> {formatCurrency(amount*0.5)}</p>
       </div>
 
       <Link to="/" className="mt-6 inline-block px-6 py-3 bg-[#FF6B6B] text-white rounded-lg shadow hover:bg-[#FF5252] transition">

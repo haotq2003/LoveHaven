@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Users, MessageSquare, BarChart3, FileText, Calendar, Settings, LogOut } from 'lucide-react'
+import { Users, MessageSquare, BarChart3, FileText, Calendar, Settings, LogOut, User } from 'lucide-react'
 import logo from '../../assets/logo.jpg'
 import { useAuth } from '../../context/AuthContext'
 
@@ -13,6 +13,7 @@ const Sidebar = () => {
     { name: 'Lịch hẹn', icon: <Calendar size={20} />, path: '/consultant/appointments' },
     // { name: 'Khách hàng', icon: <Users size={20} />, path: '/consultant/clients' },
     { name: 'Tin nhắn', icon: <MessageSquare size={20} />, path: '/consultant/chat' },
+    { name: 'Hồ sơ cá nhân', icon: <User size={20} />, path: '/consultant/profile' },
   ]
   const handleLogout = () => {
     logout();

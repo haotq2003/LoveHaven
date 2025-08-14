@@ -234,7 +234,7 @@ if (!bookingData.streetAddress) newErrors.streetAddress = 'Vui lòng nhập số
         state: {
           bookingData,
           bookingId,
-          amount: service.price,
+          amount: price ,
         },
       });
 

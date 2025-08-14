@@ -37,6 +37,7 @@ import { ChatProvider } from './context/ChatContext'
 import PaymentSuccess from './pages/user/PaymentSuccess'
 import Revenue from './pages/manager/Revenue'
 import Appointments from './pages/manager/Appointments'
+import ConsultantProfile from './pages/consultant/Profile'
 
 
 
@@ -81,6 +82,7 @@ function App() {
           <Route path="/consultant/appointments/:id" element={<AppointmentDetail />} />
           <Route path="appointments" element={<AppointmentScheduler />} />
           <Route path="chat" element={<Chat />} />
+          <Route path="profile" element={<ConsultantProfile />} />
           {/* Thêm các routes khác cho consultant ở đây */}
       </Route>
    </Routes>

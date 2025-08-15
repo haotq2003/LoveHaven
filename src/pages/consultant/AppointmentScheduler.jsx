@@ -163,9 +163,11 @@ const [manualEndTime, setManualEndTime] = useState(null);
         
     <button 
   onClick={() => handleOpenExamModal(appointment)}
-  disabled={appointment.status === 'PAID'}
+  disabled={appointment.status === 'PAID' ||  appointment.status === 'COMPLETED'}
+
   className={`flex items-center space-x-1 px-3 py-1 text-white rounded-md transition-colors text-sm 
-    ${appointment.status === 'PAID' ? 'bg-red-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+    ${appointment.status === 'PAID' || appointment.status === 'COMPLETED' ? 'bg-red-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'}`}
+
 >
   <Edit className="w-4 h-4" />
   <span>Khám</span>
@@ -200,17 +202,17 @@ const handleConfirmExam = async () => {
 
     message.success('Đã cập nhật thời gian khám thành công!');
 
-    // Trừ tiền từ ví
-    try {
-    await walletService.payBooking(currentAppointment.id);
-      //  await bookingService.updateStatusBooking(currentAppointment.id, 'COMPLETED');
-        message.success('Thanh toán thành công!');
-        fetchBooking(); // reload lại danh sách
+    // // Trừ tiền từ ví
+    // try {
+    // await walletService.payBooking(currentAppointment.id);
+    //   //  await bookingService.updateStatusBooking(currentAppointment.id, 'COMPLETED');
+    //     message.success('Thanh toán thành công!');
+    //     fetchBooking(); // reload lại danh sách
       
-    } catch (error) {
-      console.error(error);
-      message.error('Đã xảy ra lỗi khi thanh toán ');
-    }
+    // } catch (error) {
+    //   console.error(error);
+    //   message.error('Đã xảy ra lỗi khi thanh toán ');
+    // }
   } catch (error) {
     console.error(error);
     message.error('Có lỗi xảy ra khi cập nhật thời gian khám!');
@@ -303,7 +305,7 @@ const handleConfirmExam = async () => {
   open={showExamModal}
   onCancel={handleCloseExamModal}
   onOk={handleConfirmExam}
-  okText="Xác nhận & Thanh toán"
+  okText="Xác nhận "
   cancelText="Hủy"
 >
   <p><strong>Bệnh nhân:</strong> {currentAppointment?.customer?.name}</p>

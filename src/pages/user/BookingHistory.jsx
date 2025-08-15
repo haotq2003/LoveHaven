@@ -5,6 +5,8 @@ import { bookingService } from '../../services/booking.service';
 import { Modal, Input, message } from 'antd';
 import { FeedBackService } from '../../services/feedback.service';
 import { blogService } from '../../services/blog.service';
+import { formatCurrency } from '../../components/common/formatCurrency';
+import { walletService } from '../../services/wallet.service';
 const BookingHistory = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,29 @@ const [blogs, setBlogs] = useState([]);
 
     fetchBlogs();
   }, []);
+const handlePayBooking = (appointmentId) => {
+  Modal.confirm({
+    title: 'Xác nhận thanh toán',
+    content: 'Bạn có chắc chắn muốn thanh toán ?',
+    okText: 'Thanh toán',
+    cancelText: 'Hủy',
+    onOk: async () => {
+      try {
+        const res = await walletService.payBooking(appointmentId);
+        message.success('Thanh toán thành công!');
+        // Reload danh sách booking
+        const token = localStorage.getItem('token');
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+        const customerId = tokenData.id;
+        const response = await bookingService.getBookingByCusId(customerId);
+        setBookings(response.data);
+      } catch (error) {
+        console.error(error);
+        message.error('Thanh toán thất bại!');
+      }
+    }
+  });
+};
 
   if (loading)
     return (
@@ -106,7 +131,10 @@ const handleSubmitFeedback = async () => {
               <th className="text-left py-4">Phương thức</th>
               <th className="text-left py-4">Giá</th>
               <th className="text-left py-4">Trạng Thái</th>
-                  <th className="text-left py-4">Đánh giá</th>
+              <th className="text-left py-4">Giờ bắt đầu</th>
+               <th className="text-left py-4">Giờ kết thúc</th>
+               <th className='text-left py-4'>Tổng tiền</th>
+                  <th className="text-left py-4">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -137,7 +165,7 @@ const handleSubmitFeedback = async () => {
                   </div>
                 </td>
                 <td className="py-4">
-                  {booking.service.pricePerHour.toLocaleString('vi-VN')} VNĐ
+                  {formatCurrency(booking.service.pricePerHour)} 
                 </td>
                 <td className="py-4">
                   <span className={`px-3 py-1 rounded-full text-sm ${booking.status === 'Ended' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
@@ -146,6 +174,16 @@ const handleSubmitFeedback = async () => {
 
                
                 </td>
+                  <td className="py-4">
+                  {booking.appointmentAssignment.startTime} 
+                  </td>
+                  <td className="py-4">
+                  {booking.appointmentAssignment.endTime} 
+                  </td>
+                  <td className="py-4">
+                  {formatCurrency(booking.totalAmount)} 
+
+                  </td>
                 <td>
                      {booking.status === 'PAID' && (
                     <div className="mt-2">
@@ -157,6 +195,16 @@ const handleSubmitFeedback = async () => {
                       </button>
                     </div>
                   )}
+                  {booking.status === 'COMPLETED' && (
+    <div className="mt-2">
+      <button
+        onClick={() => handlePayBooking(booking.id)}
+       className="text-green-600 hover:text-green-700 text-sm font-medium mt-5"
+      >
+        Thanh toán
+      </button>
+    </div>
+  )}
                 </td>
               </tr>
             ))}

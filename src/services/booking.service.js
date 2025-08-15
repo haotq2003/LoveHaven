@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { API_URL } from '../config/api'
 
-const API_URL = 'https://summer2025-exe-be.onrender.com'
+
 
 export const bookingService = {
     getAllBookings: async () =>{

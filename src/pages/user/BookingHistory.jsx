@@ -175,13 +175,13 @@ const handleSubmitFeedback = async () => {
                
                 </td>
                   <td className="py-4">
-                  {booking.appointmentAssignment.startTime} 
+                  {booking?.appointmentAssignment?.startTime} 
                   </td>
                   <td className="py-4">
-                  {booking.appointmentAssignment.endTime} 
+                  {booking?.appointmentAssignment?.endTime} 
                   </td>
                   <td className="py-4">
-                  {formatCurrency(booking.totalAmount)} 
+                  {formatCurrency(booking?.totalAmount)} 
 
                   </td>
                 <td>

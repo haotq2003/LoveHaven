@@ -38,6 +38,7 @@ import PaymentSuccess from './pages/user/PaymentSuccess'
 import Revenue from './pages/manager/Revenue'
 import Appointments from './pages/manager/Appointments'
 import ConsultantProfile from './pages/consultant/Profile'
+import VerifyResult from './pages/user/VerifyResult'
 
 
 
@@ -45,6 +46,7 @@ function App() {
   return (
       <ChatProvider>
    <Routes>
+     <Route path="/verify-result" element={<VerifyResult />} />
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
@@ -65,6 +67,7 @@ function App() {
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/vnpay-return" element={<VNPayReturn />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+      
 
       </Route>
       <Route path="/manager" element={<ManagerLayout />}>
